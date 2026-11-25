@@ -24,7 +24,7 @@ const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").rep
       if(submit)submit.disabled=true;
       if(feedback)feedback.textContent="Sending your enquiry…";
       const values=new FormData(form);
-      const payload=Object.fromEntries(values.entries());
+      const payload:Record<string,unknown>=Object.fromEntries(values.entries());
       payload.consent=values.get("consent")==="on";
       try{
         const response=await fetch(`${form.dataset.apiBase}/api/v1/enquiries`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
