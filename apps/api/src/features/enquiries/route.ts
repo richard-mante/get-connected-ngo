@@ -5,7 +5,7 @@ import { EnquiryRepository,type EnquiryStatus } from "./repository";
 type Auth=(request:Request,env:Env)=>Promise<{email:string}|null>;
 const statuses:EnquiryStatus[]=["new","in_progress","responded","archived"];
 const clean=(value:unknown,max:number)=>typeof value==="string"?value.trim().slice(0,max):"";
-const validEmail=(value:string)=>/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);
+const validEmail=(value:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 async function clientHash(request:Request){
   const ip=request.headers.get("CF-Connecting-IP")??"unknown";
   const agent=request.headers.get("user-agent")??"";
@@ -40,8 +40,12 @@ export async function handleEnquiryRoute(request:Request,env:Env,cors:Record<str
     const subject=clean(body.subject,160),message=clean(body.message,5000);
     if(name.length<2||!validEmail(email)||subject.length<3||message.length<10)return fail("Please check the required fields",400);
     if(body.consent!==true)return fail("Please confirm permission to contact you about this enquiry",400);
-    // The edge deployment should add Turnstile and platform rate limiting before production.
-    const id=crypto.randomUUID(),now=Math.floor(Date.now()/1000);
+    const token=clean(body["cf-turnstile-response"]??body.turnstileToken,2048);
+    if(env.APP_ENV==="production"&&!env.TURNSTILE_SECRET_KEY)return fail("Form verification is not configured",503);
+    if(env.TURNSTILE_SECRET_KEY&&!await verifyTurnstile(env,request,token))return fail("Please complete the form verification and try again",400);
+    const id=crypto.randomUUID(),now=Math.floor(Date.now()/1000),hash=await clientHash(request);
+    if(!await consumeRateLimit(env,hash,now))return fail("Too many enquiries from this connection. Please wait and try again.",429);
+    await repo.create(id,{name,email,phone,subject,message},now,hash);
     await repo.create(id,{name,email,phone,subject,message},now,null);
     return json({ok:true,id},201,cors);
   }
