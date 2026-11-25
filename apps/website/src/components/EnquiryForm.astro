@@ -9,7 +9,7 @@ const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").rep
     <label>Subject <input name="subject" required minlength="3" maxlength="160" /></label>
     <label class="enquiry-message">Message <textarea name="message" required minlength="10" maxlength="5000" rows="5"></textarea></label>
   </div>
-  <label class="enquiry-consent"><input name="consent" type="checkbox" required /> I agree that Get Connected may use these details to respond to my enquiry.</label>
+  <label class="enquiry-consent"><input name="consent" type="checkbox" required /> I agree that Get Connected may use these details to respond to my enquiry. Read our <a href="/privacy">privacy notice</a>.</label>
   <label class="enquiry-trap" aria-hidden="true">Leave this field empty <input name="website" tabindex="-1" autocomplete="off" /></label>
   <button class="button" type="submit">Send enquiry ↗</button>
   <p class="enquiry-feedback" data-enquiry-feedback role="status" aria-live="polite"></p>
