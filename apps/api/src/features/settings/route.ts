@@ -1,9 +1,9 @@
 import type {Env} from "../../core/env";
 import {error,json} from "../../core/http";
 type Auth=(request:Request,env:Env)=>Promise<{email:string}|null>;
-const keys=["organizationName","contactEmail","contactPhone","publicAddress","websiteUrl","facebookUrl","instagramUrl","linkedinUrl","footerText","defaultSeoTitle","defaultSeoDescription"] as const;
+const keys=["organizationName","contactEmail","contactPhone","publicAddress","websiteUrl","facebookUrl","instagramUrl","linkedinUrl","footerText","defaultSeoTitle","defaultSeoDescription","volunteerRecruitmentEnabled"] as const;
 type Settings=Record<(typeof keys)[number],string>;
-const defaults:Settings={organizationName:"Get Connected",contactEmail:"",contactPhone:"",publicAddress:"",websiteUrl:"",facebookUrl:"",instagramUrl:"",linkedinUrl:"",footerText:"",defaultSeoTitle:"Get Connected",defaultSeoDescription:""};
+const defaults:Settings={organizationName:"Get Connected",contactEmail:"",contactPhone:"",publicAddress:"",websiteUrl:"",facebookUrl:"",instagramUrl:"",linkedinUrl:"",footerText:"",defaultSeoTitle:"Get Connected",defaultSeoDescription:"",volunteerRecruitmentEnabled:"false"};
 function parseRows(rows:Array<{key:string;value:string}>):Settings{const result={...defaults};for(const row of rows){if(keys.includes(row.key as typeof keys[number]))result[row.key as keyof Settings]=row.value;}return result;}
 async function read(env:Env){const {results}=await env.DB.prepare("SELECT key,value FROM organization_settings").all<{key:string;value:string}>();return parseRows(results??[]);}
 export async function handleSettingsRoute(request:Request,env:Env,cors:Record<string,string>,authenticate:Auth):Promise<Response|null>{
@@ -21,6 +21,7 @@ export async function handleSettingsRoute(request:Request,env:Env,cors:Record<st
   if(Object.keys(record).some(key=>!keys.includes(key as typeof keys[number])))return fail("Unknown settings field",400);
   for(const [key,value] of Object.entries(record)){
    if(typeof value!=="string"||value.length>2000)return fail("Invalid value for "+key,400);
+   if(key==="volunteerRecruitmentEnabled"&&value!=="true"&&value!=="false")return fail("Invalid volunteer recruitment setting",400);
    if(key==="contactEmail"&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))return fail("Invalid contact email",400);
    if(["websiteUrl","facebookUrl","instagramUrl","linkedinUrl"].includes(key)&&value){
     try{const url=new URL(value);if(url.protocol!=="https:"&&url.protocol!=="http:")return fail("Invalid URL for "+key,400);}
