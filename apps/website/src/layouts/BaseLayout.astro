@@ -13,6 +13,8 @@ const pageDescription=description??publicSettings.defaultSeoDescription??"People
 <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#0b526b" /><meta name="description" content={pageDescription} />
 <title>{pageTitle}</title>
+<meta property="og:title" content={pageTitle} /><meta property="og:description" content={pageDescription} /><meta property="og:type" content="website" /><meta property="og:url" content={Astro.url.href} /><meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href={Astro.url.origin+Astro.url.pathname} />
 <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
