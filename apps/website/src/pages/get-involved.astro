@@ -1,0 +1,9 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EnquiryForm from "../components/EnquiryForm.astro";
+---
+<BaseLayout title="Get involved — Get Connected" description="Contact Get Connected to learn about current ways to participate.">
+<header class="header scrolled" data-header><a class="brand" href="/" aria-label="Get Connected home"><span class="mark">✳</span>get<span>connected</span></a><nav class="nav" data-nav aria-label="Main navigation"><a href="/about">About</a><a href="/programs">Programs</a><a href="/events">Events</a><a href="/stories">Stories</a><a href="/contact">Contact</a></nav><a class="header-cta" href="/get-involved" aria-current="page">Get involved ↗</a><button class="menu" data-menu aria-label="Open menu" aria-expanded="false"><i></i><i></i></button></header>
+<main class="story-page"><a class="story-back" href="/">← Back to home</a><div class="stories-heading"><div><p class="kicker">Get Connected / Participate</p><h1>There's a place<br /><em>to connect.</em></h1><p>Interested in volunteering, taking part in an activity, or learning more about Get Connected? Send a message and the team can share current opportunities.</p></div></div><section class="join-inner"><h2>Tell us how you'd like<br /><em>to get involved.</em></h2><EnquiryForm /></section></main>
+<footer class="footer"><a class="brand" href="/">✳ get<span>connected</span></a><p>Connection is where change begins.</p><div><span>© {new Date().getFullYear()} Get Connected</span><a href="/">Home ↑</a></div></footer>
+</BaseLayout>
