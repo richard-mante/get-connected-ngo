@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EnquiryForm from "../../components/EnquiryForm.astro";
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+type Settings={organizationName?:string;contactEmail?:string;contactPhone?:string;publicAddress?:string;websiteUrl?:string;facebookUrl?:string;instagramUrl?:string;linkedinUrl?:string;footerText?:string};
+let settings:Settings={};
+try{const response=await fetch(`${apiBase}/api/v1/settings`);if(response.ok){const data=await response.json() as {settings:Settings};settings=data.settings??{};}}catch{}
+---
+<BaseLayout title="Contact — Get Connected" description="Contact Get Connected with a question or enquiry.">
+<header class="header scrolled" data-header><a class="brand" href="/" aria-label="Get Connected home"><span class="mark">✳</span>get<span>connected</span></a><nav class="nav" data-nav aria-label="Main navigation"><a href="/programs">Programs</a><a href="/events">Events</a><a href="/stories">Stories</a><a href="/contact" aria-current="page">Contact</a></nav><a class="header-cta" href="/#join">Get involved ↗</a><button class="menu" data-menu aria-label="Open menu" aria-expanded="false"><i></i><i></i></button></header>
+<main class="story-page"><a class="story-back" href="/">← Back to home</a><div class="stories-heading"><div><p class="kicker">Get Connected / Contact</p><h1>Let's start<br /><em>a conversation.</em></h1><p>Have a question or want to connect with Get Connected? Send an enquiry and the team can follow up.</p></div></div>
+<div class="editor-grid"><section class="editor-main"><EnquiryForm /></section><aside class="editor-sidebar"><section><h2>Contact details</h2>{settings.contactEmail&&<p><strong>Email</strong><br/><a href={`mailto:${settings.contactEmail}`}>{settings.contactEmail}</a></p>}{settings.contactPhone&&<p><strong>Phone</strong><br/><a href={`tel:${settings.contactPhone}`}>{settings.contactPhone}</a></p>}{settings.publicAddress&&<p><strong>Address</strong><br/>{settings.publicAddress}</p>}{!settings.contactEmail&&!settings.contactPhone&&!settings.publicAddress&&<p>Official contact details will be added when confirmed by Get Connected.</p>}</section></aside></div>
+</main>
+<footer class="footer"><a class="brand" href="/">✳ get<span>connected</span></a><p>{settings.footerText||"Connection is where change begins."}</p><div><span>© {new Date().getFullYear()} Get Connected</span><a href="/">Home ↑</a></div></footer>
+</BaseLayout>
