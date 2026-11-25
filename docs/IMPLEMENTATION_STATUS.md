@@ -8,7 +8,7 @@
 - Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
 - Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
 - Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, editor media picker, metadata editing, and reference-aware deletion.
-- Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
+- Extracted Cloudflare Access JWT verification and email allowlist into a focused core authentication module used by protected admin routes.
 - Refactored content and media API features into the minimal clean architecture: feature routes, content service/use-case validation, D1 repository, and focused media workflow; Worker entry remains the composition root.
 - Added API architecture documentation describing the monorepo boundaries and feature-layer responsibilities.
 - Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.

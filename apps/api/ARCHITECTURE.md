@@ -6,6 +6,7 @@ The Worker is the HTTP composition root. Keep the architecture intentionally sma
 src/
   index.ts                 Worker entry, middleware and feature dispatch
   core/
+    access.ts              Cloudflare Access JWT verification and allowlist
     env.ts                 Cloudflare binding contract
     http.ts                HTTP response helpers
   features/
@@ -23,7 +24,7 @@ HTTP request → Worker entry → feature route → service/use case → reposit
 - **Routes** understand HTTP and translate requests/responses.
 - **Services** enforce application rules and validate Tiptap documents.
 - **Repositories** own SQL and persistence details.
-- **Core** contains only shared runtime contracts/helpers.
+- **Core** contains shared runtime contracts, authentication, and HTTP helpers.
 - Shared Zod schemas remain in `packages/shared` so admin and API use the same input shape.
 
 Keep it pragmatic: add a layer only when it has a clear responsibility. Avoid controllers plus handlers plus use-cases plus managers that simply forward calls. Cloudflare bindings are injected through the `Env` interface; no global database client.
