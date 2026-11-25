@@ -26,4 +26,4 @@ pnpm --filter @get-connected/api exec wrangler d1 migrations apply get-connected
 Apply migrations in order: `0000_initial.sql`, `0001_media_metadata.sql`, then `0002_media_visibility.sql`. Use `--local` for local development and `--remote` for the configured Cloudflare database. The Drizzle schema reflects the final table structure.
 
 ## Validation status
-GitHub Actions runs workspace checks and builds on pushes and pull requests to `development`. Cloudflare Access, D1, R2, and domain configuration still require environment-specific setup before end-to-end testing.
+A CI workflow is configured for pushes and pull requests to `development`. Its first runs failed before executing steps because GitHub did not assign a runner; no install, type-check, or build result is available. Cloudflare Access, D1, R2, and domain configuration also require environment-specific setup before end-to-end testing.

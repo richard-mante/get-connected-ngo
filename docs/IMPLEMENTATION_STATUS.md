@@ -9,7 +9,9 @@
 - Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
 - Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.
 - Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.
+- Added server validation that public content image nodes can reference only approved public media hosted by this API.
 - Added D1 media metadata and visibility migrations; media is private by default and public images require alt text.
+- Added a GitHub Actions workflow for workspace checks and builds.
 
 ## Requires environment configuration
 - Configure Cloudflare Access applications for the admin site and API, including audience and team issuer.
@@ -25,9 +27,8 @@
 
 ## Remaining
 - Validate install, type checks, migrations, and production builds locally.
-- Add media metadata editing and deletion with safeguards for media referenced by published content.
-- Add editorial review roles and workflow refinements.
+- Complete editorial review roles and workflow refinements.
 - Connect the Astro website to the published content API and render Tiptap JSON safely.
 - Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
 
-A GitHub Actions workflow has been added for workspace checks and builds. The workflow result must be inspected after its first run; no local build or deployment has been run in this environment.
+The first GitHub Actions attempts failed before any job steps ran (no runner was assigned), so no type-check or build result is available yet.
