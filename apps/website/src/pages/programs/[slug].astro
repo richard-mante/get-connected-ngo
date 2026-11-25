@@ -1,0 +1,14 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RichContent from "../../components/RichContent.astro";
+export const prerender=false;
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+const slug=Astro.params.slug??"";
+type Item={type:string;title:string;slug:string;summary:string|null;body:string|null;publishedAt:number|null};
+let item:Item|null=null;let unavailable=false;
+try{const response=await fetch(`${apiBase}/api/v1/content/${encodeURIComponent(slug)}`);if(response.ok){const data=await response.json() as {item:Item};if(data.item.type==="program")item=data.item;else Astro.response.status=404;}else if(response.status===404)Astro.response.status=404;else{Astro.response.status=503;unavailable=true;}}catch{Astro.response.status=503;unavailable=true;}
+---
+<BaseLayout title={item?`${item.title} — Get Connected Programs`:"Program — Get Connected"} description={item?.summary??"Program information from Get Connected."}>
+<main class="story-page"><a class="story-back" href="/programs">← All programs</a>{item?<article><header class="story-header"><p class="eyebrow"><b></b> Get Connected / Program</p><h1>{item.title}</h1>{item.summary&&<p class="story-summary">{item.summary}</p>}</header><RichContent body={item.body} apiBase={apiBase}/></article>:<div class="story-not-found"><h1>{unavailable?"Programs are temporarily unavailable.":"We couldn't find that program."}</h1><p>{unavailable?"Please try again soon.":"This program may not be published."}</p><a class="button" href="/programs">Browse programs ↗</a></div>}</main>
+<footer class="footer"><a class="brand" href="/">✳ get<span>connected</span></a><p>Connection is where change begins.</p><div><span>© {new Date().getFullYear()} Get Connected</span><a href="/">Home ↑</a></div></footer>
+</BaseLayout>
