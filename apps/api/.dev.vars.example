@@ -3,3 +3,6 @@ ACCESS_TEAM_DOMAIN="https://YOUR-TEAM.cloudflareaccess.com"
 ACCESS_AUD="REPLACE_WITH_CLOUDFLARE_ACCESS_APPLICATION_AUD"
 ADMIN_EMAILS="you@example.org"
 ALLOWED_ORIGINS="http://localhost:3000"
+APP_ENV="development"
+# Set this to your Cloudflare Turnstile secret for local verification.
+TURNSTILE_SECRET_KEY=""
