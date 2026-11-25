@@ -20,11 +20,11 @@ export async function handleSettingsRoute(request:Request,env:Env,cors:Record<st
   const record=input as Record<string,unknown>;
   if(Object.keys(record).some(key=>!keys.includes(key as typeof keys[number])))return fail("Unknown settings field",400);
   for(const [key,value] of Object.entries(record)){
-   if(typeof value!=="string"||value.length>2000)return fail(\`Invalid value for \${key}\`,400);
+   if(typeof value!=="string"||value.length>2000)return fail("Invalid value for "+key,400);
    if(key==="contactEmail"&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))return fail("Invalid contact email",400);
    if(["websiteUrl","facebookUrl","instagramUrl","linkedinUrl"].includes(key)&&value){
-    try{const url=new URL(value);if(url.protocol!=="https:"&&url.protocol!=="http:")return fail(\`Invalid URL for \${key}\`,400);}
-    catch{return fail(\`Invalid URL for \${key}\`,400);}
+    try{const url=new URL(value);if(url.protocol!=="https:"&&url.protocol!=="http:")return fail("Invalid URL for "+key,400);}
+    catch{return fail("Invalid URL for "+key,400);}
    }
   }
   if("organizationName" in record&&typeof record.organizationName==="string"&&!record.organizationName.trim())return fail("Organization name cannot be empty",400);
