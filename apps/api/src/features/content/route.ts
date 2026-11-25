@@ -4,7 +4,7 @@ import {ContentService} from "./service";
 type Auth=(request:Request,env:Env)=>Promise<{email:string}|null>;
 export async function handleContentRoute(request:Request,env:Env,cors:Record<string,string>,authenticate:Auth):Promise<Response|null>{
  const path=new URL(request.url).pathname;const service=new ContentService(env);const fail=(message:string,status:number)=>error(message,status,cors);
- if(path==="/api/v1/content"&&request.method==="GET")return json({items:await service.listPublished()},200,cors);
+ if(path==="/api/v1/content"&&request.method==="GET"){const type=new URL(request.url).searchParams.get("type")??undefined;if(type&&!["page","story","program","event"].includes(type))return fail("Invalid content type",400);return json({items:await service.listPublished(type)},200,cors);}
  const publicMatch=path.match(/^\/api\/v1\/content\/([a-z0-9-]+)$/);
  if(publicMatch&&request.method==="GET"){const item=await service.getPublished(publicMatch[1]);return item?json({item},200,cors):fail("Content not found",404);}
  if(!path.startsWith("/api/v1/admin/content"))return null;
