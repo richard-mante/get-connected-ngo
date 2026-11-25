@@ -13,6 +13,8 @@ src/
       route.ts              URL/method mapping and HTTP responses
       service.ts            validation and content use cases
       repository.ts         D1 persistence
+    media/
+      route.ts              media HTTP workflow and R2/D1 operations
 ```
 
 ## Request flow

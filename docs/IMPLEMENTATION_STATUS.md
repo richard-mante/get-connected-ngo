@@ -9,7 +9,7 @@
 - Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
 - Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, editor media picker, metadata editing, and reference-aware deletion.
 - Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
-- Refactored content API into a minimal clean architecture: HTTP routes, content use-case/service validation, and D1 repository; Worker entry remains the composition root.
+- Refactored content and media API features into the minimal clean architecture: feature routes, content service/use-case validation, D1 repository, and focused media workflow; Worker entry remains the composition root.
 - Added API architecture documentation describing the monorepo boundaries and feature-layer responsibilities.
 - Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.
 - Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.
