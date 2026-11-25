@@ -5,4 +5,6 @@ export interface Env {
  ACCESS_AUD:string;
  ADMIN_EMAILS:string;
  ALLOWED_ORIGINS:string;
+ APP_ENV?:string;
+ TURNSTILE_SECRET_KEY?:string;
 }
