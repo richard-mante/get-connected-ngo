@@ -14,3 +14,9 @@ export const enquiries=sqliteTable("enquiries",{
  createdAt:integer("created_at",{mode:"timestamp"}).notNull(),
  updatedAt:integer("updated_at",{mode:"timestamp"}).notNull()
 },table=>({statusCreated:index("enquiries_status_created_idx").on(table.status,table.createdAt),created:index("enquiries_created_idx").on(table.createdAt)}));
+
+export const organizationSettings=sqliteTable("organization_settings",{
+ key:text("key").primaryKey(),
+ value:text("value").notNull(),
+ updatedAt:integer("updated_at",{mode:"timestamp"}).notNull()
+});
