@@ -1,0 +1,47 @@
+---
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+const turnstileSiteKey=import.meta.env.PUBLIC_TURNSTILE_SITE_KEY??"";
+---
+<form class="volunteer-form" data-volunteer-form data-api-base={apiBase}>
+  <div class="volunteer-fields">
+    <label>Name <input name="name" autocomplete="name" required minlength="2" maxlength="120"/></label>
+    <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254"/></label>
+    <label>Phone (optional) <input name="phone" type="tel" autocomplete="tel" maxlength="40"/></label>
+    <label>Area of interest <input name="area" required minlength="2" maxlength="160" placeholder="What would you like to help with?"/></label>
+    <label>Availability <input name="availability" required minlength="2" maxlength="160" placeholder="Days, times, or frequency"/></label>
+    <label>Skills or experience (optional) <input name="skills" maxlength="1000"/></label>
+    <label class="volunteer-message">A little more about you (optional) <textarea name="message" rows="4" maxlength="3000"></textarea></label>
+  </div>
+  {turnstileSiteKey&&<div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>}{!turnstileSiteKey&&<p class="volunteer-config-note">Form verification is not configured in this preview.</p>}
+  <label class="volunteer-consent"><input name="consent" type="checkbox" required/> I agree that Get Connected may use these details to follow up about volunteering. Read the <a href="/privacy">privacy notice</a>.</label>
+  <label class="volunteer-trap" aria-hidden="true">Leave this field empty <input name="website" tabindex="-1" autocomplete="off"/></label>
+  <button class="button" type="submit">Send volunteer interest ↗</button>
+  <p data-volunteer-feedback role="status" aria-live="polite"></p>
+</form>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+document.querySelectorAll<HTMLFormElement>("[data-volunteer-form]").forEach(form=>{
+ const feedback=form.querySelector<HTMLElement>("[data-volunteer-feedback>");
+ const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+ form.addEventListener("submit",async event=>{
+  event.preventDefault();if(!form.reportValidity())return;if(submit)submit.disabled=true;if(feedback)feedback.textContent="Sending your interest…";
+  const values=new FormData(form);const value=(key:string)=>String(values.get(key)??"").trim();
+  const area=value("area"),availability=value("availability"),skills=value("skills"),note=value("message");
+  const details=[`Area of interest: ${area}`, `Availability: ${availability}`,skills?`Skills/experience: ${skills}`:"",note?`Additional message: ${note}`:""].filter(Boolean).join("\n");
+  const payload={name:value("name"),email:value("email"),phone:value("phone"),subject:`Volunteer interest — ${area}`,message:details,consent:values.get("consent")==="on",website:value("website"),"cf-turnstile-response":value("cf-turnstile-response")};
+  try{const response=await fetch(`${form.dataset.apiBase}/api/v1/enquiries`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});if(!response.ok)throw new Error("submit failed");form.reset();if(feedback)feedback.textContent="Thank you. Your volunteer interest has been sent to Get Connected.";}catch{if(feedback)feedback.textContent="We couldn't send your interest right now. Please try again shortly.";}finally{if(submit)submit.disabled=false;}
+ });
+});
+</script>
+<style>
+.volunteer-form{display:grid;gap:1rem;margin-top:2rem;max-width:46rem}
+.volunteer-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.volunteer-form label{display:grid;gap:.45rem;font-size:.85rem}
+.volunteer-form input:not([type=checkbox]),.volunteer-form textarea{width:100%;border:1px solid rgba(15,52,71,.2);border-radius:.65rem;background:#fff;color:#123547;padding:.85rem;font:inherit}
+.volunteer-message{grid-column:1/-1}
+.volunteer-consent{display:flex!important;align-items:flex-start;gap:.65rem!important}
+.volunteer-consent input{margin-top:.25rem}
+.volunteer-trap{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.volunteer-config-note{font-size:.85rem;color:#6b7280}
+@media(max-width:600px){.volunteer-fields{grid-template-columns:1fr}.volunteer-message{grid-column:auto}}
+</style>
