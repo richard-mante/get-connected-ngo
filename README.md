@@ -53,7 +53,8 @@ pnpm build
 3. Configure Cloudflare Access for the admin app and API. Set the Access team issuer, application audience, allowed staff email(s), and allowed CORS origins in Wrangler variables.
 4. Set `NEXT_PUBLIC_API_BASE_URL` in `apps/admin/.env.local` to the Worker API URL.
 5. Set `PUBLIC_API_BASE_URL` in `apps/website/.env` (and in the website build environment) to the API's public origin.
-6. Apply D1 migrations in order, deploy the API, then build and deploy the Astro website.
+6. Set `PUBLIC_TURNSTILE_SITE_KEY` in the website build environment and `TURNSTILE_SECRET_KEY` as a Worker secret; production enquiry submissions fail closed without the secret.
+7. Apply D1 migrations in order, deploy the API, then build and deploy the Astro website.
 
 ```bash
 pnpm --filter @get-connected/api exec wrangler deploy
@@ -61,11 +62,14 @@ pnpm --filter @get-connected/website build
 pnpm --filter @get-connected/website deploy
 ```
 
-See [CMS and media setup](docs/CMS_AND_MEDIA.md) for the content workflow, authentication, media security, and migration commands.
+See [CMS and media setup](docs/CMS_AND_MEDIA.md) for the content workflow, authentication, media security, and migration commands. See [Enquiries](docs/ENQUIRIES.md) for public-form safeguards and [the staff guide](docs/ADMIN_GUIDE.md) for creating programs/events and managing settings. Review [the launch scope](docs/LAUNCH_SCOPE.md) before release.
 
 ## Project docs
 - [Project plan](docs/PROJECT_PLAN.md)
 - [Animation guidelines](docs/ANIMATION_GUIDELINES.md)
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md)
+- [Launch scope and acceptance checklist](docs/LAUNCH_SCOPE.md)
+- [Admin staff guide](docs/ADMIN_GUIDE.md)
+- [Enquiry workflow](docs/ENQUIRIES.md)
 
 The homepage still uses provisional copy and temporary stock imagery. Replace both with Get Connected's approved materials before launch.
