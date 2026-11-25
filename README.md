@@ -1,26 +1,52 @@
 # Get Connected NGO
 
-A digital platform for Get Connected, built as a pnpm/Turborepo monorepo.
+A digital platform for Get Connected, organized as a pnpm/Turborepo monorepo.
 
 ## Stack
 - pnpm + Turborepo
 - Astro public website
-- Next.js admin CMS (planned)
-- Cloudflare Workers API (planned)
-- Cloudflare D1 + Drizzle ORM (planned)
-- Cloudflare R2 media (planned)
+- Next.js admin CMS with Tiptap
+- Cloudflare Workers API
+- Cloudflare D1 + Drizzle ORM
+- Cloudflare R2 media library
+- GSAP + ScrollTrigger and Lenis for motion
 
-## Website development
-Requires Node.js 20+ and pnpm.
+## Development
+
+Requires Node.js 20+ and pnpm 9.
 
 ```bash
 pnpm install
-pnpm --filter @get-connected/website dev
+pnpm dev
 ```
 
-## Documentation
+Run an individual app:
+
+```bash
+pnpm --filter @get-connected/website dev
+pnpm --filter @get-connected/admin dev
+pnpm --filter @get-connected/api dev
+```
+
+Validate and build the workspace:
+
+```bash
+pnpm check
+pnpm build
+```
+
+## Cloudflare setup
+1. Create the D1 database and R2 bucket referenced by `apps/api/wrangler.toml`.
+2. Replace the D1 database ID and configure the R2 bucket name.
+3. Configure Cloudflare Access for the admin app and API. Set the Access team issuer, application audience, allowed staff email(s), and allowed CORS origins in Wrangler variables.
+4. Set `NEXT_PUBLIC_API_BASE_URL` in `apps/admin/.env.local` to the Worker API URL.
+5. Apply D1 migrations in order and deploy the Worker.
+
+See [CMS and media setup](docs/CMS_AND_MEDIA.md) for the content workflow, authentication, media security, and migration commands.
+
+## Project docs
 - [Project plan](docs/PROJECT_PLAN.md)
-- [Motion guidelines](docs/ANIMATION_GUIDELINES.md)
+- [Animation guidelines](docs/ANIMATION_GUIDELINES.md)
 - [Implementation status](docs/IMPLEMENTATION_STATUS.md)
 
-The initial public homepage uses temporary imagery and placeholder copy. Replace these with Get Connected's approved materials before launch.
+The homepage still uses provisional copy and temporary stock imagery. Replace both with Get Connected's approved materials before launch.

@@ -36,6 +36,27 @@ const mimeExt:Record<string,string>={"image/jpeg":"jpg","image/png":"png","image
 const maxUpload=20*1024*1024;
 function safeFilename(name:string){return name.replace(/[^a-zA-Z0-9._ -]/g,"_").slice(0,180)||"upload";}
 async function readJson(request:Request){try{return await request.json() as unknown;}catch{return null;}}
+type TiptapNode={type?:string;attrs?:Record<string,unknown>;content?:TiptapNode[]};
+async function validateTiptapBody(body:string,request:Request,env:Env){
+ try{
+  const document=JSON.parse(body) as TiptapNode;if(document.type!=="doc")return false;
+  const visit=async(node:TiptapNode):Promise<boolean>=>{
+   if(node.type==="image"){
+    const src=node.attrs?.src;const alt=node.attrs?.alt;
+    if(typeof src!=="string"||typeof alt!=="string"||!alt.trim())return false;
+    let asset:URL;try{asset=new URL(src,request.url);}catch{return false;}
+    if(asset.origin!==new URL(request.url).origin)return false;
+    const match=asset.pathname.match(/^\/media\/([a-f0-9-]+)$/i);if(!match)return false;
+    const record=await env.DB.prepare("SELECT id FROM media WHERE id=? AND visibility='public' LIMIT 1").bind(match[1]).first();
+    if(!record)return false;
+   }
+   for(const child of node.content??[])if(!(await visit(child)))return false;
+   return true;
+  };
+  return await visit(document);
+ }catch{return false;}
+}
+
 export default {async fetch(request:Request,env:Env):Promise<Response>{
  const url=new URL(request.url);const path=url.pathname;const cors=corsHeaders(request,env);const fail=(message:string,status:number)=>error(message,status,cors);
  if(request.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
@@ -48,7 +69,7 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
   const publicContent=path.match(/^\/api\/v1\/content\/([a-z0-9-]+)$/);
   if(publicContent&&request.method==="GET"){
    const item=await env.DB.prepare("SELECT id,type,title,slug,summary,body,published_at AS publishedAt FROM content WHERE status = ? AND slug = ? LIMIT 1").bind("published",publicContent[1]).first();
-   return item?json({item},200,cors):error("Content not found",404);
+   return item?json({item},200,cors):fail("Content not found",404);
   }
   const publicMedia=path.match(/^\/media\/([a-f0-9-]+)$/i);
   if(publicMedia&&request.method==="GET"){
@@ -68,7 +89,7 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
    }
    if(path==="/api/v1/admin/content"&&request.method==="POST"){
     const raw=await readJson(request);const parsed=contentInputSchema.safeParse(raw);if(!parsed.success)return fail("Invalid content fields",400);
-    const input=parsed.data;const body=input.body??"{}";try{JSON.parse(body);}catch{return fail("Body must be valid Tiptap JSON",400);}
+    const input=parsed.data;const body=input.body??'{"type":"doc","content":[{"type":"paragraph"}]}';if(!(await validateTiptapBody(body,request,env)))return fail("Body must be valid Tiptap JSON and may only reference public media from this API",400);
     const now=Math.floor(Date.now()/1000);const id=crypto.randomUUID();const publishedAt=input.status==="published"?now:null;
     try{await env.DB.prepare("INSERT INTO content (id,type,title,slug,summary,body,status,published_at,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?)").bind(id,input.type,input.title,input.slug,input.summary??null,body,input.status,publishedAt,now,now).run();}
     catch{return fail("A content item with this slug may already exist",409);}
@@ -81,7 +102,7 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
    }
    if(editContent&&request.method==="PUT"){
     const raw=await readJson(request);const parsed=contentInputSchema.safeParse(raw);if(!parsed.success)return fail("Invalid content fields",400);
-    const input=parsed.data;const body=input.body??"{}";try{JSON.parse(body);}catch{return fail("Body must be valid Tiptap JSON",400);}
+    const input=parsed.data;const body=input.body??'{"type":"doc","content":[{"type":"paragraph"}]}';if(!(await validateTiptapBody(body,request,env)))return fail("Body must be valid Tiptap JSON and may only reference public media from this API",400);
     const now=Math.floor(Date.now()/1000);const publishedAt=input.status==="published"?now:null;
     try{const result=await env.DB.prepare("UPDATE content SET type=?,title=?,slug=?,summary=?,body=?,status=?,published_at=?,updated_at=? WHERE id=?").bind(input.type,input.title,input.slug,input.summary??null,body,input.status,publishedAt,now,editContent[1]).run();
      if(!result.meta.changes)return fail("Content not found",404);}

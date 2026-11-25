@@ -30,4 +30,4 @@
 - Connect the Astro website to the published content API and render Tiptap JSON safely.
 - Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
 
-No local build or deployment has been run in this environment.
+A GitHub Actions workflow has been added for workspace checks and builds. The workflow result must be inspected after its first run; no local build or deployment has been run in this environment.

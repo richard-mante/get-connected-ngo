@@ -12,6 +12,7 @@ ALLOWED_ORIGINS = "https://admin.your-domain.org,https://your-domain.org,http://
 binding = "DB"
 database_name = "get-connected"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
+  migrations_dir = "../../packages/database/drizzle"
 
 [[r2_buckets]]
 binding = "MEDIA"
