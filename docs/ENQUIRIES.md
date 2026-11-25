@@ -34,4 +34,4 @@ Enquiry handling is a core launch feature of Get Connected, not a later add-on.
 - Confirm the organization contact email and privacy notice with Get Connected.
 
 ## Current implementation note
-The Worker endpoint and D1 migration provide the storage/API foundation. The public form, admin inbox UI, Turnstile verification, retention controls, and live Cloudflare test still need to be completed before this workflow is end-to-end.
+The development branch now contains the public homepage form, Worker submission endpoint, D1 migration and Drizzle table, protected admin list/status/note API, and admin inbox UI with reply-by-email handoff. This is an implementation in source, not a verified production workflow. Turnstile verification, edge rate limiting, privacy/retention controls, notifications if the NGO requires them, and live Cloudflare validation are still outstanding.
