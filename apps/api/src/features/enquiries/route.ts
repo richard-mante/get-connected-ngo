@@ -5,7 +5,26 @@ import { EnquiryRepository,type EnquiryStatus } from "./repository";
 type Auth=(request:Request,env:Env)=>Promise<{email:string}|null>;
 const statuses:EnquiryStatus[]=["new","in_progress","responded","archived"];
 const clean=(value:unknown,max:number)=>typeof value==="string"?value.trim().slice(0,max):"";
-const validEmail=(value:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const validEmail=(value:string)=>/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value);
+async function clientHash(request:Request){
+  const ip=request.headers.get("CF-Connecting-IP")??"unknown";
+  const agent=request.headers.get("user-agent")??"";
+  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(ip+"|"+agent));
+  return Array.from(new Uint8Array(digest)).map(byte=>byte.toString(16).padStart(2,"0")).join("");
+}
+async function consumeRateLimit(env:Env,key:string,now:number){
+  const windowSeconds=600,maximum=5,cutoff=now-windowSeconds;
+  await env.DB.prepare("DELETE FROM enquiry_rate_limits WHERE window_started < ?").bind(now-86400).run();
+  const {results}=await env.DB.prepare("INSERT INTO enquiry_rate_limits (key,window_started,count) VALUES (?, ?, 1) ON CONFLICT(key) DO UPDATE SET window_started=CASE WHEN window_started<=? THEN ? ELSE window_started END,count=CASE WHEN window_started<=? THEN 1 ELSE count+1 END WHERE window_started<=? OR count<? RETURNING count").bind(key,now,cutoff,now,cutoff,cutoff,maximum).all<{count:number}>();
+  return Boolean(results?.length);
+}
+async function verifyTurnstile(env:Env,request:Request,token:string){
+  if(!env.TURNSTILE_SECRET_KEY)return env.APP_ENV!=="production";
+  if(!token)return false;
+  const form=new FormData();form.set("secret",env.TURNSTILE_SECRET_KEY);form.set("response",token);
+  const ip=request.headers.get("CF-Connecting-IP");if(ip)form.set("remoteip",ip);
+  try{const response=await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify",{method:"POST",body:form});if(!response.ok)return false;const result=await response.json() as {success?:boolean};return result.success===true;}catch{return false;}
+}
 
 export async function handleEnquiryRoute(request:Request,env:Env,cors:Record<string,string>,authenticate:Auth):Promise<Response|null>{
   const path=new URL(request.url).pathname;
