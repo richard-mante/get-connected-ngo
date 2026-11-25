@@ -5,7 +5,7 @@
 - Built the initial Astro public website with sea-blue visual direction, GSAP/ScrollTrigger, Lenis, responsive navigation, and reduced-motion support.
 - Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
 - Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
-- Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, and editor media picker.
+- Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, editor media picker, metadata editing, and reference-aware deletion.
 - Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
 - Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.
 - Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.

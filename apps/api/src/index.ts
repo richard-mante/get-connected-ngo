@@ -17,7 +17,7 @@ function getJwks(env:Env){if(!jwks)jwks=createRemoteJWKSet(new URL("/cdn-cgi/acc
 function allowedOrigins(env:Env){return env.ALLOWED_ORIGINS.split(",").map(s=>s.trim()).filter(Boolean);}
 function corsHeaders(request:Request,env:Env){
  const origin=request.headers.get("Origin")??"";
- const headers:Record<string,string>={"vary":"Origin","access-control-allow-methods":"GET,POST,PUT,OPTIONS","access-control-allow-headers":"content-type,authorization","access-control-max-age":"86400"};
+ const headers:Record<string,string>={"vary":"Origin","access-control-allow-methods":"GET,POST,PUT,PATCH,DELETE,OPTIONS","access-control-allow-headers":"content-type,authorization","access-control-max-age":"86400"};
  if(allowedOrigins(env).includes(origin)){headers["access-control-allow-origin"]=origin;headers["access-control-allow-credentials"]="true";}
  return headers;
 }
@@ -91,6 +91,30 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
    if(path==="/api/v1/admin/media"&&request.method==="GET"){
     const {results}=await env.DB.prepare("SELECT id,filename,content_type AS contentType,size,alt,caption,width,height,visibility,created_at AS createdAt FROM media ORDER BY created_at DESC LIMIT 300").all<Record<string,unknown>>();
     return json({items:results.map(item=>({...item,url:item.visibility==="public"?new URL(`/media/${item.id}`,request.url).toString():new URL(`/api/v1/admin/media/${item.id}/file`,request.url).toString()}))},200,cors);
+   }
+   const editMedia=path.match(/^\/api\/v1\/admin\/media\/([a-f0-9-]+)$/i);
+   if(editMedia&&request.method==="PATCH"){
+    const raw=await readJson(request);if(!raw||typeof raw!=="object")return fail("Invalid media fields",400);
+    const fields=raw as Record<string,unknown>;
+    const record=await env.DB.prepare("SELECT content_type,alt,caption,visibility FROM media WHERE id=? LIMIT 1").bind(editMedia[1]).first<{content_type:string;alt:string|null;caption:string|null;visibility:string}>();
+    if(!record)return fail("Media not found",404);
+    const alt=typeof fields.alt==="string"?fields.alt.trim().slice(0,300):record.alt;
+    const caption=typeof fields.caption==="string"?fields.caption.trim().slice(0,500):record.caption;
+    const visibility=typeof fields.visibility==="string"?fields.visibility:record.visibility;
+    if(visibility!=="private"&&visibility!=="public")return fail("Invalid visibility",400);
+    if(record.content_type.startsWith("image/")&&visibility==="public"&&!alt)return fail("Add alt text before publishing an image",400);
+    const now=Math.floor(Date.now()/1000);
+    await env.DB.prepare("UPDATE media SET alt=?,caption=?,visibility=?,updated_at=? WHERE id=?").bind(alt||null,caption||null,visibility,now,editMedia[1]).run();
+    return json({item:{id:editMedia[1],alt:alt||null,caption:caption||null,visibility,updatedAt:now}},200,cors);
+   }
+   if(editMedia&&request.method==="DELETE"){
+    const record=await env.DB.prepare("SELECT object_key FROM media WHERE id=? LIMIT 1").bind(editMedia[1]).first<{object_key:string}>();
+    if(!record)return fail("Media not found",404);
+    const referenced=await env.DB.prepare("SELECT id FROM content WHERE body LIKE ? LIMIT 1").bind(`%/media/${editMedia[1]}%`).first();
+    if(referenced)return fail("This media is referenced by content. Remove it from the story before deleting.",409);
+    await env.MEDIA.delete(record.object_key);
+    await env.DB.prepare("DELETE FROM media WHERE id=?").bind(editMedia[1]).run();
+    return new Response(null,{status:204,headers:cors});
    }
    if(path==="/api/v1/admin/media"&&request.method==="POST"){
     let form:FormData;try{form=await request.formData();}catch{return fail("Expected multipart form data",400);}
