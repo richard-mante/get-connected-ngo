@@ -11,7 +11,16 @@ export class ContentService{
  async getById(id:string){return this.repository.findById(id);}
  async parseInput(raw:unknown,request:Request):Promise<{input:ContentInput;body:string}|{error:string}>{
   const parsed=contentInputSchema.safeParse(raw);if(!parsed.success)return {error:"Invalid content fields"};
-  const input=parsed.data;const body=input.body??'{"type":"doc","content":[{"type":"paragraph"}]}';
+  const input=parsed.data;
+  if(input.type==="event"){
+   const start=input.metadata?.startAt;
+   if(!start||!Number.isFinite(Date.parse(start)))return {error:"Events require a valid start date and time"};
+   const end=input.metadata?.endAt;
+   if(end&&(!Number.isFinite(Date.parse(end))||Date.parse(end)<=Date.parse(start)))return {error:"Event end must be after its start"};
+   const registration=input.metadata?.registrationUrl;
+   if(registration){try{const url=new URL(registration);if(url.protocol!=="https:"&&url.protocol!=="http:")return {error:"Registration URL must use HTTP or HTTPS"};}catch{return {error:"Invalid registration URL"};}}
+  }
+  const body=input.body??'{"type":"doc","content":[{"type":"paragraph"}]}';
   if(!(await this.validateDocument(body,request)))return {error:"Content body must be valid Tiptap JSON and may only reference approved public media"};
   return {input,body};
  }
