@@ -1,35 +1,26 @@
 # Get Connected NGO
 
-A digital platform for an NGO, built as a pnpm/Turborepo monorepo with a public website, content administration dashboard, and Cloudflare API.
+A digital platform for Get Connected, built as a pnpm/Turborepo monorepo.
 
-## Planned stack
+## Stack
+- pnpm + Turborepo
+- Astro public website
+- Next.js admin CMS (planned)
+- Cloudflare Workers API (planned)
+- Cloudflare D1 + Drizzle ORM (planned)
+- Cloudflare R2 media (planned)
 
-- **Monorepo:** Turborepo + pnpm
-- **Public website:** Astro
-- **Admin CMS:** Next.js
-- **API:** Cloudflare Workers
-- **Database:** Cloudflare D1 + Drizzle ORM
-- **Media:** Cloudflare R2 with presigned direct browser uploads
+## Website development
+Requires Node.js 20+ and pnpm.
 
-## Project status
-
-The repository is initialized with architecture and implementation planning. Application code has not yet been scaffolded.
+```bash
+pnpm install
+pnpm --filter @get-connected/website dev
+```
 
 ## Documentation
-
 - [Project plan](docs/PROJECT_PLAN.md)
+- [Motion guidelines](docs/ANIMATION_GUIDELINES.md)
+- [Implementation status](docs/IMPLEMENTATION_STATUS.md)
 
-## Planned workspace
-
-```
-apps/
-  website/   Astro public website
-  admin/     Next.js administration/CMS
-  api/       Cloudflare Worker API
-packages/
-  database/  Drizzle schema and migrations
-  shared/    Shared types and validation
-  ui/        Reusable UI components
-  config/    Shared tooling configuration
-docs/
-```
+The initial public homepage uses temporary imagery and placeholder copy. Replace these with Get Connected's approved materials before launch.
