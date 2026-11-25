@@ -1,0 +1,6 @@
+---
+import { renderTiptap } from "../lib/renderTiptap";
+const { body, apiBase } = Astro.props as { body: string | null; apiBase: string };
+const html = renderTiptap(body, apiBase);
+---
+<div class="rich-content" set:html={html}></div>

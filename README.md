@@ -4,7 +4,7 @@ A digital platform for Get Connected, organized as a pnpm/Turborepo monorepo.
 
 ## Stack
 - pnpm + Turborepo
-- Astro public website
+- Astro public website with Cloudflare SSR
 - Next.js admin CMS with Tiptap
 - Cloudflare Workers API
 - Cloudflare D1 + Drizzle ORM
@@ -40,7 +40,14 @@ pnpm build
 2. Replace the D1 database ID and configure the R2 bucket name.
 3. Configure Cloudflare Access for the admin app and API. Set the Access team issuer, application audience, allowed staff email(s), and allowed CORS origins in Wrangler variables.
 4. Set `NEXT_PUBLIC_API_BASE_URL` in `apps/admin/.env.local` to the Worker API URL.
-5. Apply D1 migrations in order and deploy the Worker.
+5. Set `PUBLIC_API_BASE_URL` in `apps/website/.env` (and in the website build environment) to the API's public origin.
+6. Apply D1 migrations in order, deploy the API, then build and deploy the Astro website.
+
+```bash
+pnpm --filter @get-connected/api exec wrangler deploy
+pnpm --filter @get-connected/website build
+pnpm --filter @get-connected/website deploy
+```
 
 See [CMS and media setup](docs/CMS_AND_MEDIA.md) for the content workflow, authentication, media security, and migration commands.
 

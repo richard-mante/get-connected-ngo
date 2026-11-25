@@ -3,6 +3,8 @@
 ## Completed in development
 - Created isolated `development` branch and Turborepo/pnpm workspace.
 - Built the initial Astro public website with sea-blue visual direction, GSAP/ScrollTrigger, Lenis, responsive navigation, and reduced-motion support.
+- Connected the public Astro site to published CMS stories with server-rendered story listing and detail routes.
+- Added a controlled Tiptap JSON renderer that escapes text and permits only safe links and managed public media images.
 - Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
 - Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
 - Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, editor media picker, metadata editing, and reference-aware deletion.
@@ -17,7 +19,7 @@
 - Configure Cloudflare Access applications for the admin site and API, including audience and team issuer.
 - Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ADMIN_EMAILS`, and `ALLOWED_ORIGINS`.
 - Create the D1 database and R2 bucket, replace the D1 ID in Wrangler config, and apply migrations in order.
-- Set the admin app's `NEXT_PUBLIC_API_BASE_URL` to the deployed Worker URL.
+- Set `NEXT_PUBLIC_API_BASE_URL` for the admin and `PUBLIC_API_BASE_URL` for the Astro website build.
 - Configure CORS and Access handling for preflight requests.
 
 ## Temporary content
@@ -26,9 +28,9 @@
 - Email and organization domain are placeholders and must be confirmed.
 
 ## Remaining
-- Validate install, type checks, migrations, and production builds locally.
+- Validate install, type checks, migrations, and production builds.
 - Complete editorial review roles and workflow refinements.
-- Connect the Astro website to the published content API and render Tiptap JSON safely.
 - Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
+- Replace provisional website copy and temporary images with approved materials.
 
 The first GitHub Actions attempts failed before any job steps ran (no runner was assigned), so no type-check or build result is available yet.
