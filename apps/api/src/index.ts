@@ -76,7 +76,7 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
    const record=await env.DB.prepare("SELECT object_key,content_type,filename FROM media WHERE id = ? AND visibility = 'public' LIMIT 1").bind(publicMedia[1]).first<{object_key:string;content_type:string;filename:string}>();
    if(!record)return fail("Media not found",404);
    const object=await env.MEDIA.get(record.object_key);if(!object)return fail("Media not found",404);
-   const headers=new Headers(cors);headers.set("content-type",record.content_type);headers.set("cache-control","public, max-age=86400, s-maxage=604800");headers.set("x-content-type-options","nosniff");
+   const headers=new Headers(cors);headers.set("content-type",record.content_type);headers.set("cache-control","public, max-age=60, s-maxage=60");headers.set("x-content-type-options","nosniff");
    if(record.content_type==="application/pdf")headers.set("content-disposition",`inline; filename="${safeFilename(record.filename)}"`);
    return new Response(object.body,{headers});
   }

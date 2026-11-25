@@ -11,7 +11,7 @@ Admin API routes require a Cloudflare Access JWT in the `Cf-Access-Jwt-Assertion
 Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ADMIN_EMAILS`, and `ALLOWED_ORIGINS` in Wrangler vars or secrets. Keep actual production values out of Git. `wrangler.toml` and `.dev.vars.example` contain placeholders only. Ensure Cloudflare Access permits CORS preflight requests to reach the Worker.
 
 ## Media storage
-Media uploads are streamed from the authenticated admin to R2 with a 20 MB limit and an allowlist of JPEG, PNG, WebP, GIF, MP4, WebM, and PDF. The Worker creates opaque object keys and writes metadata to D1. Public assets must be explicitly marked public; private assets are delivered through an authenticated Worker route. Public image uploads require alt text.
+Media uploads are streamed from the authenticated admin to R2 with a 20 MB limit and an allowlist of JPEG, PNG, WebP, GIF, MP4, WebM, and PDF. The Worker creates opaque object keys and writes metadata to D1. Public assets must be explicitly marked public; private assets are delivered through an authenticated Worker route. Public image uploads require alt text. Public media responses use a short cache lifetime so visibility changes and removals propagate quickly.
 
 The media library supports listing, upload, editing alt text/captions/visibility, and deleting assets. Deletion is blocked when a content body references the asset. Tiptap's media picker inserts public media URLs into public content. Private media remains available only to authorized admins. R2 object keys are never accepted from the browser.
 
