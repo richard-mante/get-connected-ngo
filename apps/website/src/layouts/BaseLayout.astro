@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 const { title, description } = Astro.props;
-const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\\/$/,"");
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
 let publicSettings:{defaultSeoTitle?:string;defaultSeoDescription?:string;organizationName?:string}={};
 try{const response=await fetch(`${apiBase}/api/v1/settings`);if(response.ok){const data=await response.json() as {settings:typeof publicSettings};publicSettings=data.settings??{};}}catch{}
 const pageTitle=title??publicSettings.defaultSeoTitle??"Get Connected — Together, we grow";
