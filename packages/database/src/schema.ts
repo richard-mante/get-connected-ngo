@@ -20,3 +20,9 @@ export const organizationSettings=sqliteTable("organization_settings",{
  value:text("value").notNull(),
  updatedAt:integer("updated_at",{mode:"timestamp"}).notNull()
 });
+
+export const enquiryRateLimits=sqliteTable("enquiry_rate_limits",{
+ key:text("key").primaryKey(),
+ windowStarted:integer("window_started").notNull(),
+ count:integer("count").notNull()
+},table=>({window:index("enquiry_rate_limits_window_idx").on(table.windowStarted)}));
