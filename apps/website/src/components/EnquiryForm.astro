@@ -15,7 +15,7 @@ const turnstileSiteKey=import.meta.env.PUBLIC_TURNSTILE_SITE_KEY??"";
   <button class="button" type="submit">Send enquiry ↗</button>
   <p class="enquiry-feedback" data-enquiry-feedback role="status" aria-live="polite"></p>
 </form>
-{turnstileSiteKey&&<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}\n<script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   document.querySelectorAll<HTMLFormElement>("[data-enquiry-form]").forEach((form) => {
     const feedback=form.querySelector<HTMLElement>("[data-enquiry-feedback]");
     const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
