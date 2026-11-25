@@ -12,7 +12,8 @@
 - CMS-managed public pages can be published at their own slug (for example, an approved `about` page); contact and get-involved pages are present.
 - Sitemap and robots.txt endpoints, canonical URLs, Open Graph metadata, and a privacy-notice draft are present. The privacy wording requires organization review.
 - Organization settings editor and protected D1 API for approved organization name, contact channels, social URLs, footer text, and default SEO metadata; public SEO defaults and contact page use these settings.
-- D1 migrations added for organization settings and structured content metadata.
+- D1 migrations added for organization settings, structured content metadata, and enquiry rate-limit storage.
+- Enquiry endpoint includes honeypot, server-side Turnstile verification (fails closed in production if the secret is absent), and D1-backed hashed-client rate limiting. Production sitekey/secret still require Cloudflare configuration.
 - GitHub Actions checks for workspace checks, static checks, and builds; workflow is configured for both main and development branches.
 - Product scope and release acceptance checklist documented in [LAUNCH_SCOPE.md](./LAUNCH_SCOPE.md). Sponsorships are explicitly excluded from this release.
 
@@ -23,7 +24,7 @@
 - Cloudflare Access applications, allowed origins, admin access, and production environment variables must be configured and tested.
 - D1 migrations must be applied in order against the real database; media upload/public/private flows need a live Cloudflare smoke test.
 - Programs, events, and organization settings are now implemented in source but have not passed a verified workspace build or live deployment test. Team member management remains optional/not implemented.
-- Enquiry flow is not yet proven end-to-end. Turnstile/server-side anti-spam verification, edge rate limiting, privacy/retention policy, email notification (if required), and a live submission-to-admin test remain.
+- Enquiry flow is not yet proven end-to-end. Configure `PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`, approve privacy/retention wording, configure email notification if required, and run a live submission-to-admin test.
 - Volunteer-interest form/inbox is planned only if Get Connected confirms active volunteer recruitment; it is not implemented as a complete workflow.
 - The public site has provisional organization copy and temporary stock images. Approved Get Connected details, images, email, and domain are needed before launch.
 - Full SEO/structured-data review, accessibility audit, security review, backups/restore test, and deployment verification remain. The privacy notice is a draft only and needs approved contact and retention language.
@@ -33,8 +34,8 @@
 ## Environment setup still required
 - Configure ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS, and ALLOWED_ORIGINS.
 - Create the D1 database and R2 bucket; replace the D1 ID and verify bucket names.
-- Set NEXT_PUBLIC_API_BASE_URL for admin and PUBLIC_API_BASE_URL for the Astro website.
+- Set NEXT_PUBLIC_API_BASE_URL for admin and PUBLIC_API_BASE_URL for the Astro website; set `PUBLIC_TURNSTILE_SITE_KEY` for the website build and `TURNSTILE_SECRET_KEY` as a Worker secret.
 - Apply migrations, deploy API, deploy website, configure Access for the deployed admin/API, then test an actual admin login and public story publication.
 
 ## Honest readiness
-The foundation, program/event content workflow, organization settings, and initial enquiry workflow are present in source. The product is not launch-ready or proven end-to-end until CI completes, remaining anti-spam/privacy controls and optional modules are addressed, Cloudflare is configured, and live smoke tests pass.
+The foundation, program/event content workflow, organization settings, and initial enquiry workflow are present in source. The product is not launch-ready or proven end-to-end until CI completes, production Turnstile keys, privacy/retention controls, and optional modules are addressed, Cloudflare is configured, and live smoke tests pass.
