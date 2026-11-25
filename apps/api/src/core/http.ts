@@ -1,0 +1,2 @@
+export const json=(data:unknown,status=200,extra:Record<string,string>={})=>new Response(JSON.stringify(data),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store",...extra}});
+export const error=(message:string,status:number,headers:Record<string,string>={})=>json({error:message},status,headers);

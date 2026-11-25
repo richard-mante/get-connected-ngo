@@ -11,6 +11,18 @@ A digital platform for Get Connected, organized as a pnpm/Turborepo monorepo.
 - Cloudflare R2 media library
 - GSAP + ScrollTrigger and Lenis for motion
 
+## Architecture
+
+This is a **monorepo** with a deliberately minimal clean architecture for the Cloudflare Workers API. The Worker is the composition root; each feature is organized into route → service → repository, with shared contracts in `packages/shared`. We avoid layering frameworks or abstractions that only forward calls.
+
+- `apps/website` — Astro public website
+- `apps/admin` — Next.js CMS/admin with Tiptap
+- `apps/api` — Cloudflare Worker HTTP API
+- `packages/shared` — shared Zod validation and contracts
+- `packages/database` — Drizzle schema and D1 migrations
+
+See [API architecture](apps/api/ARCHITECTURE.md) for the request flow and responsibilities.
+
 ## Development
 
 Requires Node.js 20+ and pnpm 9.
