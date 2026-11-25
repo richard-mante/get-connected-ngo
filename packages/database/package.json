@@ -1,1 +1,1 @@
-{"name":"@get-connected/database","private":true,"type":"module","exports":{"./schema":"./src/schema.ts"},"dependencies":{"drizzle-orm":"^0.39.0"},"devDependencies":{"drizzle-kit":"^0.30.5","typescript":"^5.7.2"}}
+{"name":"@get-connected/database","private":true,"type":"module","exports":{"./schema":"./src/schema.ts"},"scripts":{"check":"tsc --noEmit"},"dependencies":{"drizzle-orm":"^0.39.0"},"devDependencies":{"drizzle-kit":"^0.30.5","typescript":"^5.7.2"}}
