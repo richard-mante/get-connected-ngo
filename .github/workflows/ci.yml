@@ -2,9 +2,10 @@ name: CI
 
 on:
   push:
-    branches: [development]
+    branches: [development, main]
   pull_request:
-    branches: [development]
+    branches: [development, main]
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -21,5 +22,7 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Type and project checks
         run: pnpm check
-      - name: Build apps
+      - name: Lint / static checks
+        run: pnpm lint
+      - name: Build workspace apps
         run: pnpm build

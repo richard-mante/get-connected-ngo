@@ -1,38 +1,30 @@
 # Implementation Status
 
-## Completed in development
-- Created isolated `development` branch and Turborepo/pnpm workspace.
-- Built the initial Astro public website with sea-blue visual direction, GSAP/ScrollTrigger, Lenis, responsive navigation, and reduced-motion support.
-- Connected the public Astro site to published CMS stories with server-rendered story listing and detail routes.
-- Added a controlled Tiptap JSON renderer that escapes text and permits only safe links and managed public media images.
-- Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
-- Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
-- Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, editor media picker, metadata editing, and reference-aware deletion.
-- Extracted Cloudflare Access JWT verification and email allowlist into a focused core authentication module used by protected admin routes.
-- Refactored content and media API features into the minimal clean architecture: feature routes, content service/use-case validation, D1 repository, and focused media workflow; Worker entry remains the composition root.
-- Added API architecture documentation describing the monorepo boundaries and feature-layer responsibilities.
-- Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.
-- Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.
-- Added server validation that public content image nodes can reference only approved public media hosted by this API.
-- Added D1 media metadata and visibility migrations; media is private by default and public images require alt text.
-- Added a GitHub Actions workflow for workspace checks and builds.
+## Implemented in the repository
+- pnpm/Turborepo monorepo with Astro public site, Next.js admin, Cloudflare Worker API, shared Zod contracts, and D1/Drizzle schema/migrations.
+- Public Astro homepage and server-rendered story list/detail pages connected to published content endpoints.
+- Safe Tiptap JSON rendering with escaped text and constrained links/media.
+- Admin story editor with draft save and publish, searchable content list, and Tiptap formatting.
+- R2 media library workflow: upload, private/public visibility, metadata editing, private preview, and reference-aware deletion.
+- Worker API with health route, published-content reads, Access-protected admin content/media routes, D1 persistence, R2 storage, and minimal feature-oriented Clean Architecture.
+- GitHub Actions checks for workspace checks, static checks, and builds; workflow is configured for both main and development branches.
 
-## Requires environment configuration
-- Configure Cloudflare Access applications for the admin site and API, including audience and team issuer.
-- Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ADMIN_EMAILS`, and `ALLOWED_ORIGINS`.
-- Create the D1 database and R2 bucket, replace the D1 ID in Wrangler config, and apply migrations in order.
-- Set `NEXT_PUBLIC_API_BASE_URL` for the admin and `PUBLIC_API_BASE_URL` for the Astro website build.
-- Configure CORS and Access handling for preflight requests.
+## Not yet end-to-end / launch blockers
+- No verified successful install, type-check, lint, or build yet. Recent Actions jobs failed before starting steps because GitHub did not assign a runner. This is infrastructure failure, not a passing test.
+- The repository cannot be built in this working environment because outbound GitHub access is unavailable. Run the workflow again once runners are available and fix any actual code failures it reports.
+- Cloudflare D1 and R2 resources are not provisioned; Wrangler still contains placeholder team/audience/admin/database values.
+- Cloudflare Access applications, allowed origins, admin access, and production environment variables must be configured and tested.
+- D1 migrations must be applied in order against the real database; media upload/public/private flows need a live Cloudflare smoke test.
+- Admin currently manages stories and media; programs, events, enquiries, organization settings, and editorial roles are not complete CMS workflows.
+- The public site has provisional organization copy and temporary stock images. Approved Get Connected details, images, email, and domain are needed before launch.
+- SEO metadata/structured data, accessibility audit, security review, backups/restore test, and deployment verification remain.
+- The homepage displayed program concepts and contact CTA must be confirmed against official NGO information before publication.
 
-## Temporary content
-- Mission and program copy is provisional pending approved NGO information.
-- Homepage photography is temporary stock imagery and must be replaced by approved Get Connected photos.
-- Email and organization domain are placeholders and must be confirmed.
+## Environment setup still required
+- Configure ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS, and ALLOWED_ORIGINS.
+- Create the D1 database and R2 bucket; replace the D1 ID and verify bucket names.
+- Set NEXT_PUBLIC_API_BASE_URL for admin and PUBLIC_API_BASE_URL for the Astro website.
+- Apply migrations, deploy API, deploy website, configure Access for the deployed admin/API, then test an actual admin login and public story publication.
 
-## Remaining
-- Validate install, type checks, migrations, and production builds.
-- Complete editorial review roles and workflow refinements.
-- Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
-- Replace provisional website copy and temporary images with approved materials.
-
-The first GitHub Actions attempts failed before any job steps ran (no runner was assigned), so no type-check or build result is available yet.
+## Honest readiness
+The merge to main is complete, and the foundation is implemented. The product is not yet launch-ready or proven end-to-end until the blockers above are closed and a successful build plus live Cloudflare smoke test is recorded.
