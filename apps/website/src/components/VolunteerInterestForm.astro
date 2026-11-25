@@ -21,7 +21,7 @@ const turnstileSiteKey=import.meta.env.PUBLIC_TURNSTILE_SITE_KEY??"";
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
 document.querySelectorAll<HTMLFormElement>("[data-volunteer-form]").forEach(form=>{
- const feedback=form.querySelector<HTMLElement>("[data-volunteer-feedback>");
+ const feedback=form.querySelector<HTMLElement>("[data-volunteer-feedback]");
  const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
  form.addEventListener("submit",async event=>{
   event.preventDefault();if(!form.reportValidity())return;if(submit)submit.disabled=true;if(feedback)feedback.textContent="Sending your interest…";
