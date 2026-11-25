@@ -1,0 +1,4 @@
+export interface Env { DB: D1Database; MEDIA: R2Bucket; }
+const headers = { "content-type":"application/json; charset=utf-8", "access-control-allow-origin":"*", "access-control-allow-methods":"GET,POST,PUT,DELETE,OPTIONS", "access-control-allow-headers":"content-type,authorization" };
+const json=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});
+export default { async fetch(request:Request,env:Env):Promise<Response>{const url=new URL(request.url);if(request.method==="OPTIONS")return new Response(null,{status:204,headers});if(url.pathname==="/api/health")return json({ok:true,service:"get-connected-api"});if(url.pathname==="/api/v1/content"&&request.method==="GET")return json({items:[],message:"Published content endpoint is scaffolded; CMS integration is pending."});return json({error:"Not found"},404);} };
