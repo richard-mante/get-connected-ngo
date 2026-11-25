@@ -1,0 +1,1 @@
+{"name":"@get-connected/shared","private":true,"type":"module","exports":{"./schemas":"./src/schemas.ts"},"scripts":{"check":"tsc --noEmit"},"dependencies":{"zod":"^3.24.2"},"devDependencies":{"typescript":"^5.7.2"}}

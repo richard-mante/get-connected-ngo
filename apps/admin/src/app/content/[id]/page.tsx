@@ -1,0 +1,2 @@
+import { ContentEditor } from "../../../components/ContentEditor";
+export default async function EditContentPage({params}:{params:Promise<{id:string}>}){const {id}=await params;return <main className="main cms-main"><ContentEditor contentId={id}/></main>;}
