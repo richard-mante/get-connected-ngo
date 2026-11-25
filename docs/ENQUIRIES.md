@@ -27,11 +27,12 @@ Enquiry handling is a core launch feature of Get Connected, not a later add-on.
 - Do not claim an email was sent; replying opens the staff member's email client unless a mail provider is deliberately integrated.
 
 ## Production safeguards required before launch
-- Configure Cloudflare Turnstile (server-side token verification) and edge rate limiting; honeypot alone is not adequate anti-spam protection.
+- Configure Cloudflare Turnstile site key (`PUBLIC_TURNSTILE_SITE_KEY`) and Worker secret (`TURNSTILE_SECRET_KEY`). Production API fails closed if the secret is missing.
+- Worker verifies Turnstile server-side and applies a D1-backed limit of five submissions per hashed client key per ten-minute window. The honeypot remains as an additional layer.
 - Add privacy/retention policy and a deletion/retention process for enquiries.
 - Ensure backups and access controls cover enquiry data.
 - Test public submission → D1 persistence → admin inbox → status/note update → reply handoff.
 - Confirm the organization contact email and privacy notice with Get Connected.
 
 ## Current implementation note
-The development branch now contains the public homepage form, Worker submission endpoint, D1 migration and Drizzle table, protected admin list/status/note API, and admin inbox UI with reply-by-email handoff. This is an implementation in source, not a verified production workflow. Turnstile verification, edge rate limiting, privacy/retention controls, notifications if the NGO requires them, and live Cloudflare validation are still outstanding.
+The development branch now contains the public homepage form, Worker submission endpoint, D1 migration and Drizzle table, protected admin list/status/note API, and admin inbox UI with reply-by-email handoff. This is an implementation in source, not a verified production workflow. Turnstile and D1 rate-limit code are now present in source; production keys and sitekey still need configuration. Privacy/retention approval, notification configuration if required, and live Cloudflare validation remain outstanding.
