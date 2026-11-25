@@ -9,6 +9,8 @@
 - Worker API with health route, published-content reads, Access-protected admin content/media routes, D1 persistence, R2 storage, and minimal feature-oriented Clean Architecture.
 - Public enquiry form, D1/API submission, protected admin inbox, statuses, internal notes, and reply-by-email handoff are present in source.
 - Program and event listing/detail routes on the public website; published content is fetched from the API, and event date/location details are rendered.
+- CMS-managed public pages can be published at their own slug (for example, an approved `about` page); contact and get-involved pages are present.
+- Sitemap and robots.txt endpoints, canonical URLs, Open Graph metadata, and a privacy-notice draft are present. The privacy wording requires organization review.
 - Organization settings editor and protected D1 API for approved organization name, contact channels, social URLs, footer text, and default SEO metadata; public SEO defaults and contact page use these settings.
 - D1 migrations added for organization settings and structured content metadata.
 - GitHub Actions checks for workspace checks, static checks, and builds; workflow is configured for both main and development branches.
@@ -24,9 +26,9 @@
 - Enquiry flow is not yet proven end-to-end. Turnstile/server-side anti-spam verification, edge rate limiting, privacy/retention policy, email notification (if required), and a live submission-to-admin test remain.
 - Volunteer-interest form/inbox is planned only if Get Connected confirms active volunteer recruitment; it is not implemented as a complete workflow.
 - The public site has provisional organization copy and temporary stock images. Approved Get Connected details, images, email, and domain are needed before launch.
-- SEO metadata/structured data, accessibility audit, security review, backups/restore test, and deployment verification remain.
+- Full SEO/structured-data review, accessibility audit, security review, backups/restore test, and deployment verification remain. The privacy notice is a draft only and needs approved contact and retention language.
 - Sponsorships, sponsor management, online donations, and fundraising/payment processing are outside the current release scope.
-- Homepage program concepts and contact CTA must be confirmed against official NGO information before publication.
+- Homepage program concepts, stock photography, and provisional copy must be confirmed/replaced with official NGO information before publication.
 
 ## Environment setup still required
 - Configure ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_EMAILS, and ALLOWED_ORIGINS.
