@@ -7,7 +7,8 @@
 - Admin content editor with stories, programs, events, and pages; searchable/type/status-filtered content library; Tiptap rich text; structured program objectives and event date/time/location/registration fields; draft save and publish.
 - R2 media library workflow: upload, private/public visibility, metadata editing, private preview, and reference-aware deletion.
 - Worker API with health route, published-content reads, Access-protected admin content/media routes, D1 persistence, R2 storage, and minimal feature-oriented Clean Architecture.
-- Public enquiry form, D1/API submission, protected admin inbox, statuses, internal notes, and reply-by-email handoff are present in source.
+- Public enquiry form, D1/API submission, protected admin inbox, status/note management, inbox search, and reply-by-email handoff are present in source.
+- Lightweight volunteer-interest form is available only when the organization enables recruitment in settings; submissions enter the protected enquiries inbox with volunteer details and follow-up status.
 - Program and event listing/detail routes on the public website; published content is fetched from the API, and event date/location details are rendered.
 - CMS-managed public pages can be published at their own slug (for example, an approved `about` page); contact and get-involved pages are present.
 - Sitemap and robots.txt endpoints, canonical URLs, Open Graph metadata, and a privacy-notice draft are present. The privacy wording requires organization review.
@@ -25,7 +26,7 @@
 - D1 migrations must be applied in order against the real database; media upload/public/private flows need a live Cloudflare smoke test.
 - Programs, events, and organization settings are now implemented in source but have not passed a verified workspace build or live deployment test. Team member management remains optional/not implemented.
 - Enquiry flow is not yet proven end-to-end. Configure `PUBLIC_TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`, approve privacy/retention wording, configure email notification if required, and run a live submission-to-admin test.
-- Volunteer-interest form/inbox is planned only if Get Connected confirms active volunteer recruitment; it is not implemented as a complete workflow.
+- Volunteer-interest intake is implemented using the existing enquiry inbox and is disabled by default; Get Connected must confirm recruitment and explicitly enable it.
 - The public site has provisional organization copy and temporary stock images. Approved Get Connected details, images, email, and domain are needed before launch.
 - Full SEO/structured-data review, accessibility audit, security review, backups/restore test, and deployment verification remain. The privacy notice is a draft only and needs approved contact and retention language.
 - Sponsorships, sponsor management, online donations, and fundraising/payment processing are outside the current release scope.
@@ -38,4 +39,4 @@
 - Apply migrations, deploy API, deploy website, configure Access for the deployed admin/API, then test an actual admin login and public story publication.
 
 ## Honest readiness
-The foundation, program/event content workflow, organization settings, and initial enquiry workflow are present in source. The product is not launch-ready or proven end-to-end until CI completes, production Turnstile keys, privacy/retention controls, and optional modules are addressed, Cloudflare is configured, and live smoke tests pass.
+The foundation, program/event content workflow, organization settings, and initial enquiry workflow are present in source. The product is not launch-ready or proven end-to-end until CI completes, production Turnstile keys, privacy/retention controls, and optional team records are addressed, Cloudflare is configured, and live smoke tests pass.
