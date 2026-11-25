@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -8,10 +8,12 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { MediaGallery } from "./MediaGallery";
 
 const API_BASE=(process.env.NEXT_PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
-export function ContentEditor(){
+type ContentStatus="draft"|"review"|"published"|"archived";
+export function ContentEditor({contentId:initialContentId=null}:{contentId?:string|null}){
  const [title,setTitle]=useState("");const [slug,setSlug]=useState("");const [summary,setSummary]=useState("");const [savedBody,setSavedBody]=useState("{}");
- const [showMediaPicker,setShowMediaPicker]=useState(false);const [contentId,setContentId]=useState<string|null>(null);const [busy,setBusy]=useState(false);const [notice,setNotice]=useState("");const [noticeError,setNoticeError]=useState(false);const [status,setStatus]=useState<"draft"|"published">("draft");
+ const [showMediaPicker,setShowMediaPicker]=useState(false);const [contentId,setContentId]=useState<string|null>(initialContentId);const [busy,setBusy]=useState(false);const [notice,setNotice]=useState("");const [noticeError,setNoticeError]=useState(false);const [status,setStatus]=useState<ContentStatus>("draft");
  const editor=useEditor({immediatelyRender:false,extensions:[StarterKit,Image.configure({allowBase64:false,inline:false}),Placeholder.configure({placeholder:"Start writing your story…"})],content:{type:"doc",content:[{type:"paragraph"}]},onUpdate:({editor})=>setSavedBody(JSON.stringify(editor.getJSON()))});
+ useEffect(()=>{if(!initialContentId||!editor)return;let active=true;(async()=>{try{const response=await fetch(`${API_BASE}/api/v1/admin/content/${initialContentId}`,{credentials:"include"});if(!response.ok)throw new Error(response.status===401?"Sign in through Cloudflare Access to edit this story.":"Could not load this story.");const data=await response.json() as {item:{id:string;title:string;slug:string;summary:string|null;body:string|null;status:ContentStatus}};if(!active)return;const item=data.item;setContentId(item.id);setTitle(item.title);setSlug(item.slug);setSummary(item.summary??"");setStatus(item.status);const body=item.body??"{}";setSavedBody(body);editor.commands.setContent(JSON.parse(body));}catch(e){if(active){setNoticeError(true);setNotice(e instanceof Error?e.message:"Could not load this story.");}}})();return()=>{active=false;};},[initialContentId,editor]);
  const updateTitle=(value:string)=>{setTitle(value);setSlug(value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));};
  const save=async(nextStatus:"draft"|"published")=>{
   if(!title.trim()||!slug.trim()){setNoticeError(true);setNotice("Add a title and valid URL slug before saving.");return;}
@@ -23,7 +25,7 @@ export function ContentEditor(){
   }catch(e){setNoticeError(true);setNotice(e instanceof Error?e.message:"Could not save this story.");}finally{setBusy(false);}
  };
  return <div className="content-editor-page">
-  <header className="editor-header"><div><small>CONTENT / {contentId?"EDIT STORY":"NEW STORY"}</small><h1>{contentId?"Edit story":"Create a story"}</h1><p>Draft a community update for the Get Connected website.</p></div><span className="draft-pill">{status==="published"?"Published":"Draft"}</span></header>
+  <header className="editor-header"><div><small>CONTENT / {contentId?"EDIT STORY":"NEW STORY"}</small><h1>{contentId?"Edit story":"Create a story"}</h1><p>Draft a community update for the Get Connected website.</p></div><span className="draft-pill">{status==="published"?"Published":status==="review"?"In review":status==="archived"?"Archived":"Draft"}</span></header>
   {notice&&<p className={noticeError?"editor-alert error":"editor-alert"} role="status">{notice}</p>}
   <div className="editor-grid"><section className="editor-main">
    <label className="field-label">Story title<input value={title} onChange={e=>updateTitle(e.target.value)} placeholder="Give your story a clear title"/></label>

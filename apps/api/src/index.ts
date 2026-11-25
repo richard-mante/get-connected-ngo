@@ -75,6 +75,10 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
     return json({item:{id,...input,body,publishedAt,createdAt:now,updatedAt:now}},201,cors);
    }
    const editContent=path.match(/^\/api\/v1\/admin\/content\/([a-f0-9-]+)$/i);
+   if(editContent&&request.method==="GET"){
+    const item=await env.DB.prepare("SELECT id,type,title,slug,summary,body,status,published_at AS publishedAt,created_at AS createdAt,updated_at AS updatedAt FROM content WHERE id=? LIMIT 1").bind(editContent[1]).first();
+    return item?json({item},200,cors):fail("Content not found",404);
+   }
    if(editContent&&request.method==="PUT"){
     const raw=await readJson(request);const parsed=contentInputSchema.safeParse(raw);if(!parsed.success)return fail("Invalid content fields",400);
     const input=parsed.data;const body=input.body??"{}";try{JSON.parse(body);}catch{return fail("Body must be valid Tiptap JSON",400);}

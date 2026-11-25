@@ -4,9 +4,10 @@
 - Created isolated `development` branch and Turborepo/pnpm workspace.
 - Built the initial Astro public website with sea-blue visual direction, GSAP/ScrollTrigger, Lenis, responsive navigation, and reduced-motion support.
 - Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
+- Added content workspace with searchable/status-filtered content list and edit routes for saved stories.
 - Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, and editor media picker.
 - Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
-- Added authenticated D1 content create/update/list endpoints and public published-content endpoints.
+- Added authenticated D1 content create/read/update/list endpoints and public published-content endpoints.
 - Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.
 - Added D1 media metadata and visibility migrations; media is private by default and public images require alt text.
 
@@ -25,7 +26,7 @@
 ## Remaining
 - Validate install, type checks, migrations, and production builds locally.
 - Add media metadata editing and deletion with safeguards for media referenced by published content.
-- Add content listing/editing UI and editorial review roles.
+- Add editorial review roles and workflow refinements.
 - Connect the Astro website to the published content API and render Tiptap JSON safely.
 - Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
 
