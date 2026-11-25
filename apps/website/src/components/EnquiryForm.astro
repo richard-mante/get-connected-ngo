@@ -1,0 +1,52 @@
+---
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+---
+<form class="enquiry-form" data-enquiry-form data-api-base={apiBase}>
+  <div class="enquiry-fields">
+    <label>Name <input name="name" autocomplete="name" required minlength="2" maxlength="120" /></label>
+    <label>Email <input name="email" type="email" autocomplete="email" required maxlength="254" /></label>
+    <label>Phone (optional) <input name="phone" type="tel" autocomplete="tel" maxlength="40" /></label>
+    <label>Subject <input name="subject" required minlength="3" maxlength="160" /></label>
+    <label class="enquiry-message">Message <textarea name="message" required minlength="10" maxlength="5000" rows="5"></textarea></label>
+  </div>
+  <label class="enquiry-consent"><input name="consent" type="checkbox" required /> I agree that Get Connected may use these details to respond to my enquiry.</label>
+  <label class="enquiry-trap" aria-hidden="true">Leave this field empty <input name="website" tabindex="-1" autocomplete="off" /></label>
+  <button class="button" type="submit">Send enquiry ↗</button>
+  <p class="enquiry-feedback" data-enquiry-feedback role="status" aria-live="polite"></p>
+</form>
+<script>
+  document.querySelectorAll<HTMLFormElement>("[data-enquiry-form]").forEach((form) => {
+    const feedback=form.querySelector<HTMLElement>("[data-enquiry-feedback]");
+    const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    form.addEventListener("submit",async(event)=>{
+      event.preventDefault();
+      if(!form.reportValidity())return;
+      if(submit)submit.disabled=true;
+      if(feedback)feedback.textContent="Sending your enquiry…";
+      const values=new FormData(form);
+      const payload=Object.fromEntries(values.entries());
+      payload.consent=values.get("consent")==="on";
+      try{
+        const response=await fetch(`${form.dataset.apiBase}/api/v1/enquiries`,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
+        if(!response.ok)throw new Error("submit failed");
+        form.reset();
+        if(feedback)feedback.textContent="Thank you. Your enquiry has been received.";
+      }catch{
+        if(feedback)feedback.textContent="We couldn't send your enquiry right now. Please try again shortly.";
+      }finally{if(submit)submit.disabled=false;}
+    });
+  });
+</script>
+<style>
+  .enquiry-form{display:grid;gap:1rem;margin-top:2rem;max-width:46rem}
+  .enquiry-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  .enquiry-form label{display:grid;gap:.45rem;font-size:.85rem}
+  .enquiry-form input:not([type=checkbox]),.enquiry-form textarea{width:100%;border:1px solid rgba(15,52,71,.2);border-radius:.65rem;background:#fff;color:#123547;padding:.85rem;font:inherit}
+  .enquiry-message{grid-column:1/-1}
+  .enquiry-consent{display:flex!important;align-items:flex-start;gap:.65rem!important}
+  .enquiry-consent input{margin-top:.25rem}
+  .enquiry-trap{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .enquiry-feedback{min-height:1.5rem;margin:0;font-size:.9rem}
+  .enquiry-form button:disabled{opacity:.6;cursor:wait}
+  @media(max-width:600px){.enquiry-fields{grid-template-columns:1fr}.enquiry-message{grid-column:auto}}
+</style>
