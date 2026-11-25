@@ -51,12 +51,10 @@ Never expose R2 credentials in browser code. Restrict CORS, validate uploads, us
 - Keep personal data private and out of logs; agree retention/deletion policy before launch.
 
 ## Delivery order
-1. Verify and harden existing stories, media, and enquiry foundation.
-2. Implement reusable content model/API/admin patterns for programs and events.
-3. Connect public program and event pages to published API data.
-4. Add organization settings and optional team management.
-5. Add volunteer-interest workflow only after recruitment is confirmed.
-6. Complete SEO, accessibility, security, backups/restore, deployment, and live end-to-end validation.
+1. Verify and harden the existing stories, media, enquiries, programs, events, and organization settings source.
+2. Complete anti-spam, privacy/retention, notification configuration, and optional volunteer-interest intake after recruitment is confirmed.
+3. Add optional team management only when official staff content is supplied.
+4. Complete SEO, accessibility, security, backups/restore, deployment, and live end-to-end validation.
 
 ## Launch requirements
 - Successful install, checks, lint, and builds in CI.
