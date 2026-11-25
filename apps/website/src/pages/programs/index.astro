@@ -1,0 +1,12 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+type Item={id:string;title:string;slug:string;summary:string|null;publishedAt:number|null};
+let items:Item[]=[];
+try{const response=await fetch(`${apiBase}/api/v1/content?type=program`);if(response.ok){const data=await response.json() as {items:Item[]};items=data.items??[];}}catch{}
+---
+<BaseLayout title="Programs — Get Connected" description="Explore Get Connected's published programs and initiatives.">
+<main class="story-page"><a class="story-back" href="/">← Back to home</a><div class="stories-heading"><div><p class="kicker">Get Connected / Programs</p><h1>Our work,<br /><em>in action.</em></h1><p>Explore the programs and initiatives Get Connected has published.</p></div></div>
+{items.length?<div class="latest-stories">{items.map((item,index)=><article class="latest-story"><span class="story-number">{String(index+1).padStart(2,"0")}</span><div><small>PROGRAM</small><h3><a href={`/programs/${item.slug}`}>{item.title}</a></h3><p>{item.summary??"Read about this program and its activities."}</p></div><a class="round" href={`/programs/${item.slug}`} aria-label={`View ${item.title}`}>↗</a></article>)}</div>:<div class="stories-empty"><p>Program information will appear here when Get Connected publishes it.</p></div>}</main>
+<footer class="footer"><a class="brand" href="/">✳ get<span>connected</span></a><p>Connection is where change begins.</p><div><span>© {new Date().getFullYear()} Get Connected</span><a href="/">Home ↑</a></div></footer>
+</BaseLayout>
