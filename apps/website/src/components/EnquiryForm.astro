@@ -1,5 +1,6 @@
 ---
 const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
+const turnstileSiteKey=import.meta.env.PUBLIC_TURNSTILE_SITE_KEY??"";
 ---
 <form class="enquiry-form" data-enquiry-form data-api-base={apiBase}>
   <div class="enquiry-fields">
@@ -9,12 +10,12 @@ const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").rep
     <label>Subject <input name="subject" required minlength="3" maxlength="160" /></label>
     <label class="enquiry-message">Message <textarea name="message" required minlength="10" maxlength="5000" rows="5"></textarea></label>
   </div>
-  <label class="enquiry-consent"><input name="consent" type="checkbox" required /> I agree that Get Connected may use these details to respond to my enquiry. Read our <a href="/privacy">privacy notice</a>.</label>
+  {turnstileSiteKey&&<div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-theme="light"></div>}{!turnstileSiteKey&&<p class="enquiry-config-note">Form verification is not configured in this preview. Please contact Get Connected through its approved contact channel.</p>}<label class="enquiry-consent"><input name="consent" type="checkbox" required /> I agree that Get Connected may use these details to respond to my enquiry. Read our <a href="/privacy">privacy notice</a>.</label>
   <label class="enquiry-trap" aria-hidden="true">Leave this field empty <input name="website" tabindex="-1" autocomplete="off" /></label>
   <button class="button" type="submit">Send enquiry ↗</button>
   <p class="enquiry-feedback" data-enquiry-feedback role="status" aria-live="polite"></p>
 </form>
-<script>
+{turnstileSiteKey&&<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}\n<script>
   document.querySelectorAll<HTMLFormElement>("[data-enquiry-form]").forEach((form) => {
     const feedback=form.querySelector<HTMLElement>("[data-enquiry-feedback]");
     const submit=form.querySelector<HTMLButtonElement>('button[type="submit"]');
@@ -46,7 +47,7 @@ const apiBase=(import.meta.env.PUBLIC_API_BASE_URL??"http://localhost:8787").rep
   .enquiry-consent{display:flex!important;align-items:flex-start;gap:.65rem!important}
   .enquiry-consent input{margin-top:.25rem}
   .enquiry-trap{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  .enquiry-feedback{min-height:1.5rem;margin:0;font-size:.9rem}
+  .enquiry-feedback{min-height:1.5rem;margin:0;font-size:.9rem}\n  .enquiry-config-note{font-size:.85rem;color:#6b7280}
   .enquiry-form button:disabled{opacity:.6;cursor:wait}
   @media(max-width:600px){.enquiry-fields{grid-template-columns:1fr}.enquiry-message{grid-column:auto}}
 </style>
