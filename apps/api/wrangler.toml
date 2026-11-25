@@ -3,6 +3,7 @@ main = "src/index.ts"
 compatibility_date = "2025-02-14"
 
 [vars]
+APP_ENV = "production"
 ACCESS_TEAM_DOMAIN = "https://YOUR-TEAM.cloudflareaccess.com"
 ACCESS_AUD = "REPLACE_WITH_CLOUDFLARE_ACCESS_APPLICATION_AUD"
 ADMIN_EMAILS = "REPLACE_WITH_ADMIN_EMAIL"
