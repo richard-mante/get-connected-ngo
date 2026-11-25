@@ -5,7 +5,7 @@ type Node={type?:string;attrs?:Record<string,unknown>;content?:Node[]};
 export class ContentService{
  private repository:ContentRepository;
  constructor(private env:Env){this.repository=new ContentRepository(env);}
- async listPublished(){return this.repository.listPublished();}
+ async listPublished(type?:string){return this.repository.listPublished(type);}
  async getPublished(slug:string){return this.repository.findPublishedBySlug(slug);}
  async listAdmin(){return this.repository.listAdmin();}
  async getById(id:string){return this.repository.findById(id);}
