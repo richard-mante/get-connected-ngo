@@ -2,6 +2,12 @@ name = "get-connected-api"
 main = "src/index.ts"
 compatibility_date = "2025-02-14"
 
+[vars]
+ACCESS_TEAM_DOMAIN = "https://YOUR-TEAM.cloudflareaccess.com"
+ACCESS_AUD = "REPLACE_WITH_CLOUDFLARE_ACCESS_APPLICATION_AUD"
+ADMIN_EMAILS = "REPLACE_WITH_ADMIN_EMAIL"
+ALLOWED_ORIGINS = "https://admin.your-domain.org,https://your-domain.org,http://localhost:3000"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "get-connected"

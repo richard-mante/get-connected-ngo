@@ -1,16 +1,21 @@
 # Implementation Status
 
 ## Completed in development
-- Created isolated `development` branch.
-- Added pnpm workspace and Turborepo configuration.
-- Scaffolded Astro public website package.
-- Built initial sea-blue editorial homepage and responsive styles.
-- Added GSAP + ScrollTrigger entrance/reveal effects.
-- Integrated Lenis with ScrollTrigger.
-- Added reduced-motion handling and mobile navigation.
-- Added Tiptap rich-text editor starter to the Next.js admin, including formatting toolbar and structured JSON document preview.
-- Added media library page with search, media-type filtering, grid/list presentation, and a clear empty state.
-- Expanded D1/Drizzle media metadata for captions, alt text, dimensions, and update timestamps.
+- Created isolated `development` branch and Turborepo/pnpm workspace.
+- Built the initial Astro public website with sea-blue visual direction, GSAP/ScrollTrigger, Lenis, responsive navigation, and reduced-motion support.
+- Added Next.js admin starter and Tiptap rich-text editor with formatting, JSON document handling, draft save, and publish actions.
+- Added searchable media gallery with grid/list modes, file-type filtering, upload metadata, private/public visibility, and editor media picker.
+- Added Cloudflare Access JWT verification and email allowlist to protected admin Worker routes.
+- Added authenticated D1 content create/update/list endpoints and public published-content endpoints.
+- Added authenticated R2 media upload and private preview endpoints, plus public media delivery for explicitly public assets.
+- Added D1 media metadata and visibility migrations; media is private by default and public images require alt text.
+
+## Requires environment configuration
+- Configure Cloudflare Access applications for the admin site and API, including audience and team issuer.
+- Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ADMIN_EMAILS`, and `ALLOWED_ORIGINS`.
+- Create the D1 database and R2 bucket, replace the D1 ID in Wrangler config, and apply migrations in order.
+- Set the admin app's `NEXT_PUBLIC_API_BASE_URL` to the deployed Worker URL.
+- Configure CORS and Access handling for preflight requests.
 
 ## Temporary content
 - Mission and program copy is provisional pending approved NGO information.
@@ -18,11 +23,10 @@
 - Email and organization domain are placeholders and must be confirmed.
 
 ## Remaining
-- Validate install, Astro check, and production build locally.
-- CMS authentication, roles, and protected write APIs.
-- Implement content save/review/publish workflow and connect the editor to D1.
-- Implement secure R2 upload lifecycle and connect the media gallery to real metadata.
-- Add public content renderer for Tiptap JSON and connect the website to published CMS content.
-- Complete SEO, accessibility, performance, security, deployment, and backup checks.
+- Validate install, type checks, migrations, and production builds locally.
+- Add media metadata editing and deletion with safeguards for media referenced by published content.
+- Add content listing/editing UI and editorial review roles.
+- Connect the Astro website to the published content API and render Tiptap JSON safely.
+- Add SEO fields, accessibility checks, image optimization, backups, deployment and security review.
 
-No build has been run in this environment.
+No local build or deployment has been run in this environment.

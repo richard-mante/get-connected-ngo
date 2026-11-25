@@ -1,0 +1,5 @@
+# Configure Cloudflare Access and your local admin email before running Wrangler.
+ACCESS_TEAM_DOMAIN="https://YOUR-TEAM.cloudflareaccess.com"
+ACCESS_AUD="REPLACE_WITH_CLOUDFLARE_ACCESS_APPLICATION_AUD"
+ADMIN_EMAILS="you@example.org"
+ALLOWED_ORIGINS="http://localhost:3000"

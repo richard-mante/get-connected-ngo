@@ -1,28 +1,20 @@
 # CMS editor and media library
 
-## Rich text
+## Rich text and content workflow
+The admin uses Tiptap and stores its document as structured JSON. The Worker validates content fields and JSON before writing to D1. Draft and published states are supported by the API; publishing should happen only after editorial review. The public API returns published content only.
 
-The admin app uses Tiptap (React) for story and page body editing. The initial editor enables paragraph text, headings, bold/italic, lists, blockquotes, undo/redo, and image nodes. The editor document is stored as Tiptap JSON rather than generated HTML so the public site can render content using a controlled renderer.
+## Authentication and authorization
+Admin API routes require a Cloudflare Access JWT in the `Cf-Access-Jwt-Assertion` header. The Worker verifies signature, issuer, and audience against Access's JWKS, then checks the email against the `ADMIN_EMAILS` allowlist. Configure Cloudflare Access applications for both the admin app and API; restrict them to the intended staff identities. The API's `ALLOWED_ORIGINS` is an explicit comma-separated CORS allowlist. Never use a wildcard origin with credentialed admin requests.
 
-Tiptap is initialized with `immediatelyRender: false` to avoid Next.js server/client hydration mismatches. Images are not allowed as base64 editor payloads; content should reference media URLs managed by the media library.
+Set `ACCESS_TEAM_DOMAIN`, `ACCESS_AUD`, `ADMIN_EMAILS`, and `ALLOWED_ORIGINS` in Wrangler vars or secrets. Keep actual production values out of Git. `wrangler.toml` and `.dev.vars.example` contain placeholders only.
 
-## Media library
+## Media storage
+Media uploads are streamed from the authenticated admin to R2 with a 20 MB limit and an allowlist of JPEG, PNG, WebP, GIF, MP4, WebM, and PDF. The Worker creates opaque object keys and writes metadata to D1. Public assets must be explicitly marked public; private assets are delivered through an authenticated Worker route. Public image uploads require alt text.
 
-The admin includes a searchable/filterable media gallery UI with grid and list layouts. The media metadata model includes filename, MIME type, byte size, object key, alt text, caption, dimensions, and timestamps.
+The media library can list and upload files. Tiptap's media picker should insert public media URLs into public content. Private media remains available only to authorized admins. R2 object keys are never accepted from the browser.
 
-Actual upload, media selection persistence, and secure R2 delivery are intentionally not enabled yet. They require CMS authentication and authorization first. The planned upload flow is:
-1. Authenticated editor requests an upload intent from the API.
-2. API validates role, file size, MIME type, and a generated object key.
-3. Browser uploads directly to R2 using a short-lived signed URL or a Worker-mediated upload.
-4. API verifies the object and writes metadata to D1.
-5. Gallery and editor consume the same media record; selecting an asset inserts its managed URL and alt text.
+## Database
+Apply migrations in order: `0000_initial.sql`, `0001_media_metadata.sql`, then `0002_media_visibility.sql`. The Drizzle schema reflects the final table structure.
 
-Do not expose arbitrary R2 object keys or accept untrusted public URLs as editor images. Public/private visibility should be explicit in the media record before production launch.
-
-## Current status
-
-- Tiptap editor and formatting toolbar are wired in the admin UI.
-- Media library page, search/filter controls, grid/list view, and empty state are present.
-- Save/publish controls and upload are disabled until secure authenticated API endpoints are implemented.
-- Migration `0001_media_metadata.sql` extends the existing media table; apply migrations in order.
-- This starter has not been locally installed, built, or tested in this environment.
+## Validation status
+The source has been committed to the development branch, but this environment has not run pnpm install, type checks, migrations, or deployment. Configure Access, D1, R2, and origins before testing end-to-end.
