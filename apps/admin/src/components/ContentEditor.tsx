@@ -5,12 +5,14 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
+import { MediaGallery } from "./MediaGallery";
 
 export function ContentEditor() {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [summary, setSummary] = useState("");
   const [savedBody, setSavedBody] = useState("{}");
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -45,11 +47,13 @@ export function ContentEditor() {
               <button type="button" onClick={()=>editor?.chain().focus().toggleHeading({level:2}).run()} aria-pressed={editor?.isActive("heading",{level:2})}>Heading</button>
               <button type="button" onClick={()=>editor?.chain().focus().toggleBulletList().run()} aria-pressed={editor?.isActive("bulletList")}>List</button>
               <button type="button" onClick={()=>editor?.chain().focus().toggleBlockquote().run()} aria-pressed={editor?.isActive("blockquote")}>Quote</button>
+              <button type="button" onClick={()=>setShowMediaPicker(value=>!value)} aria-expanded={showMediaPicker}>Insert image</button>
               <button type="button" onClick={()=>editor?.chain().focus().undo().run()}>Undo</button>
               <button type="button" onClick={()=>editor?.chain().focus().redo().run()}>Redo</button>
             </div>
             <EditorContent editor={editor} className="tiptap-content" />
           </div>
+          {showMediaPicker && <div className="editor-media-picker"><MediaGallery onSelect={item=>{editor?.chain().focus().setImage({src:item.url,alt:item.alt??""}).run();setShowMediaPicker(false);}} /><button type="button" className="picker-close" onClick={()=>setShowMediaPicker(false)}>Close media picker</button></div>}
           <p className="editor-note">Rich text is edited with Tiptap and represented as structured JSON. Draft persistence will be connected through the authenticated CMS API.</p>
           <details className="content-json"><summary>Editor document preview</summary><pre>{savedBody}</pre></details>
         </section>
