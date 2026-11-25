@@ -2,7 +2,7 @@ import type {Env} from "../../core/env";
 export type ContentRecord={id:string;type:string;title:string;slug:string;summary:string|null;body:string|null;status:string;publishedAt:number|null;createdAt?:number;updatedAt?:number};
 export class ContentRepository{
  constructor(private env:Env){}
- async listPublished(){const {results}=await this.env.DB.prepare("SELECT id,type,title,slug,summary,published_at AS publishedAt FROM content WHERE status=? ORDER BY published_at DESC LIMIT 100").bind("published").all();return results;}
+ async listPublished(type?:string){const query=type?this.env.DB.prepare("SELECT id,type,title,slug,summary,published_at AS publishedAt FROM content WHERE status=? AND type=? ORDER BY published_at DESC LIMIT 100").bind("published",type):this.env.DB.prepare("SELECT id,type,title,slug,summary,published_at AS publishedAt FROM content WHERE status=? ORDER BY published_at DESC LIMIT 100").bind("published");const {results}=await query.all();return results;}
  async findPublishedBySlug(slug:string){return this.env.DB.prepare("SELECT id,type,title,slug,summary,body,published_at AS publishedAt FROM content WHERE status=? AND slug=? LIMIT 1").bind("published",slug).first();}
  async listAdmin(){const {results}=await this.env.DB.prepare("SELECT id,type,title,slug,summary,status,published_at AS publishedAt,updated_at AS updatedAt FROM content ORDER BY updated_at DESC LIMIT 100").all();return results;}
  async findById(id:string){return this.env.DB.prepare("SELECT id,type,title,slug,summary,body,status,published_at AS publishedAt,created_at AS createdAt,updated_at AS updatedAt FROM content WHERE id=? LIMIT 1").bind(id).first();}
