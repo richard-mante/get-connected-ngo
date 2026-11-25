@@ -15,7 +15,8 @@
 - Cloudflare D1 and R2 resources are not provisioned; Wrangler still contains placeholder team/audience/admin/database values.
 - Cloudflare Access applications, allowed origins, admin access, and production environment variables must be configured and tested.
 - D1 migrations must be applied in order against the real database; media upload/public/private flows need a live Cloudflare smoke test.
-- Admin currently manages stories and media; programs, events, enquiries, organization settings, and editorial roles are not complete CMS workflows.
+- Admin currently manages stories, media, and an enquiries inbox (new/in-progress/responded/archived statuses, internal notes, and reply-by-email handoff). Programs, events, organization settings, and editorial roles are not complete CMS workflows.
+- Enquiry form and D1/API/admin inbox code are now committed on development, but the enquiry flow is not yet proven end-to-end. Turnstile/server-side anti-spam verification, edge rate limiting, privacy/retention policy, email notification (if required), and a live submission-to-admin test remain.
 - The public site has provisional organization copy and temporary stock images. Approved Get Connected details, images, email, and domain are needed before launch.
 - SEO metadata/structured data, accessibility audit, security review, backups/restore test, and deployment verification remain.
 - The homepage displayed program concepts and contact CTA must be confirmed against official NGO information before publication.
