@@ -3,8 +3,7 @@ import type { Env } from "./core/env";
 import { json, error } from "./core/http";
 import { handleContentRoute } from "./features/content/route";
 import { handleMediaRoute } from "./features/media/route";
-
-
+import { handleEnquiryRoute } from "./features/enquiries/route";
 
 function allowedOrigins(env:Env){return env.ALLOWED_ORIGINS.split(",").map(s=>s.trim()).filter(Boolean);}
 function corsHeaders(request:Request,env:Env){
@@ -19,6 +18,7 @@ export default {async fetch(request:Request,env:Env):Promise<Response>{
  try{
   if(path==="/api/health"&&request.method==="GET")return json({ok:true,service:"get-connected-api"},200,cors);
   const contentResponse=await handleContentRoute(request,env,cors,requireAdmin);if(contentResponse)return contentResponse;
+  const enquiryResponse=await handleEnquiryRoute(request,env,cors,requireAdmin);if(enquiryResponse)return enquiryResponse;
   const mediaResponse=await handleMediaRoute(request,env,cors,requireAdmin);if(mediaResponse)return mediaResponse;
   return fail("Not found",404);
  }catch{return fail("Internal server error",500);}
