@@ -9,26 +9,26 @@ import { MediaGallery } from "./MediaGallery";
 
 const API_BASE=(process.env.NEXT_PUBLIC_API_BASE_URL??"http://localhost:8787").replace(/\/$/,"");
 type ContentStatus="draft"|"review"|"published"|"archived";
-export function ContentEditor({contentId:initialContentId=null}:{contentId?:string|null}){
+export function ContentEditor({contentId:initialContentId=null,contentType="story"}:{contentId?:string|null;contentType?:"story"|"program"|"event"|"page"}){
  const [title,setTitle]=useState("");const [slug,setSlug]=useState("");const [summary,setSummary]=useState("");const [savedBody,setSavedBody]=useState('{"type":"doc","content":[{"type":"paragraph"}]}');
- const [showMediaPicker,setShowMediaPicker]=useState(false);const [contentId,setContentId]=useState<string|null>(initialContentId);const [busy,setBusy]=useState(false);const [notice,setNotice]=useState("");const [noticeError,setNoticeError]=useState(false);const [status,setStatus]=useState<ContentStatus>("draft");
- const editor=useEditor({immediatelyRender:false,extensions:[StarterKit,Image.configure({allowBase64:false,inline:false}),Placeholder.configure({placeholder:"Start writing your story…"})],content:{type:"doc",content:[{type:"paragraph"}]},onUpdate:({editor})=>setSavedBody(JSON.stringify(editor.getJSON()))});
- useEffect(()=>{if(!initialContentId||!editor)return;let active=true;(async()=>{try{const response=await fetch(`${API_BASE}/api/v1/admin/content/${initialContentId}`,{credentials:"include"});if(!response.ok)throw new Error(response.status===401?"Sign in through Cloudflare Access to edit this story.":"Could not load this story.");const data=await response.json() as {item:{id:string;title:string;slug:string;summary:string|null;body:string|null;status:ContentStatus}};if(!active)return;const item=data.item;setContentId(item.id);setTitle(item.title);setSlug(item.slug);setSummary(item.summary??"");setStatus(item.status);const body=item.body??"{}";setSavedBody(body);editor.commands.setContent(JSON.parse(body));}catch(e){if(active){setNoticeError(true);setNotice(e instanceof Error?e.message:"Could not load this story.");}}})();return()=>{active=false;};},[initialContentId,editor]);
+ const [showMediaPicker,setShowMediaPicker]=useState(false);const [contentId,setContentId]=useState<string|null>(initialContentId);const [busy,setBusy]=useState(false);const [notice,setNotice]=useState("");const [noticeError,setNoticeError]=useState(false);const [status,setStatus]=useState<ContentStatus>("draft");const [type,setType]=useState<"story"|"program"|"event"|"page">(contentType);
+ const editor=useEditor({immediatelyRender:false,extensions:[StarterKit,Image.configure({allowBase64:false,inline:false}),Placeholder.configure({placeholder:"Start writing…"})],content:{type:"doc",content:[{type:"paragraph"}]},onUpdate:({editor})=>setSavedBody(JSON.stringify(editor.getJSON()))});
+ useEffect(()=>{if(!initialContentId||!editor)return;let active=true;(async()=>{try{const response=await fetch(`${API_BASE}/api/v1/admin/content/${initialContentId}`,{credentials:"include"});if(!response.ok)throw new Error(response.status===401?"Sign in through Cloudflare Access to edit this story.":"Could not load this story.");const data=await response.json() as {item:{id:string;title:string;slug:string;summary:string|null;body:string|null;status:ContentStatus}};if(!active)return;const item=data.item;setContentId(item.id);setType(item.type as "story"|"program"|"event"|"page");setTitle(item.title);setSlug(item.slug);setSummary(item.summary??"");setStatus(item.status);const body=item.body??"{}";setSavedBody(body);editor.commands.setContent(JSON.parse(body));}catch(e){if(active){setNoticeError(true);setNotice(e instanceof Error?e.message:"Could not load this story.");}}})();return()=>{active=false;};},[initialContentId,editor]);
  const updateTitle=(value:string)=>{setTitle(value);setSlug(value.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""));};
  const save=async(nextStatus:"draft"|"published")=>{
   if(!title.trim()||!slug.trim()){setNoticeError(true);setNotice("Add a title and valid URL slug before saving.");return;}
   setBusy(true);setNotice("");setNoticeError(false);
-  try{const payload={type:"story",title:title.trim(),slug:slug.trim(),summary:summary.trim()||undefined,body:savedBody,status:nextStatus};
+  try{const payload={type,title:title.trim(),slug:slug.trim(),summary:summary.trim()||undefined,body:savedBody,status:nextStatus};
    const response=await fetch(contentId?`${API_BASE}/api/v1/admin/content/${contentId}`:`${API_BASE}/api/v1/admin/content`,{method:contentId?"PUT":"POST",credentials:"include",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
    const data=await response.json() as {item?:{id:string};error?:string};if(!response.ok)throw new Error(data.error??"Could not save this story.");
-   if(data.item?.id)setContentId(data.item.id);setStatus(nextStatus);setNotice(nextStatus==="published"?"Story published.":"Draft saved.");setNoticeError(false);
+   if(data.item?.id)setContentId(data.item.id);setStatus(nextStatus);setNotice(nextStatus==="published"?`${type[0].toUpperCase()+type.slice(1)} published.`:"Draft saved.");setNoticeError(false);
   }catch(e){setNoticeError(true);setNotice(e instanceof Error?e.message:"Could not save this story.");}finally{setBusy(false);}
  };
  return <div className="content-editor-page">
-  <header className="editor-header"><div><small>CONTENT / {contentId?"EDIT STORY":"NEW STORY"}</small><h1>{contentId?"Edit story":"Create a story"}</h1><p>Draft a community update for the Get Connected website.</p></div><span className="draft-pill">{status==="published"?"Published":status==="review"?"In review":status==="archived"?"Archived":"Draft"}</span></header>
+  <header className="editor-header"><div><small>CONTENT / {contentId?`EDIT ${type.toUpperCase()}`:`NEW ${type.toUpperCase()}`}</small><h1>{contentId?`Edit ${type}`:`Create ${type}`}</h1><p>Manage published {type} information for Get Connected.</p></div><span className="draft-pill">{status==="published"?"Published":status==="review"?"In review":status==="archived"?"Archived":"Draft"}</span></header>
   {notice&&<p className={noticeError?"editor-alert error":"editor-alert"} role="status">{notice}</p>}
   <div className="editor-grid"><section className="editor-main">
-   <label className="field-label">Story title<input value={title} onChange={e=>updateTitle(e.target.value)} placeholder="Give your story a clear title"/></label>
+   {!contentId&&<label className="field-label">Content type<select value={type} onChange={e=>setType(e.target.value as typeof type)}><option value="story">Story / news</option><option value="program">Program</option><option value="event">Event</option><option value="page">Page</option></select></label>}<label className="field-label">Title<input value={title} onChange={e=>updateTitle(e.target.value)} placeholder="Enter a clear title"/></label>
    <label className="field-label">URL slug<input value={slug} onChange={e=>setSlug(e.target.value)} placeholder="story-url"/></label>
    <label className="field-label">Short summary<textarea value={summary} onChange={e=>setSummary(e.target.value)} rows={3} placeholder="A short introduction for cards and search results"/></label>
    <div className="editor-card"><div className="editor-toolbar" aria-label="Text formatting">
@@ -39,7 +39,7 @@ export function ContentEditor({contentId:initialContentId=null}:{contentId?:stri
   </section><aside className="editor-sidebar">
    <section><h2>Publishing</h2><p>{status==="published"?"This story is marked as published.":"Save a draft or publish the story when it is ready."}</p><button type="button" disabled={busy||!title.trim()||!slug.trim()} onClick={()=>void save("draft")}>{busy?"Saving…":"Save draft"}</button><button type="button" className="secondary" disabled={busy||!title.trim()||!slug.trim()} onClick={()=>void save("published")}>{busy?"Saving…":"Publish story"}</button><small>Cloudflare Access protects CMS write endpoints.</small></section>
    <section><h2>Featured image</h2><p>Insert approved public images into the story using the media picker.</p><button type="button" className="secondary" onClick={()=>setShowMediaPicker(true)}>Choose from media</button></section>
-   <section><h2>Story details</h2><p>Type: Story</p><p>Status: {status}</p><p>Body format: Tiptap JSON</p>{contentId&&<small>Record ID: {contentId}</small>}</section>
+   <section><h2>Story details</h2><p>Type: {type}</p><p>Status: {status}</p><p>Body format: Tiptap JSON</p>{contentId&&<small>Record ID: {contentId}</small>}</section>
   </aside></div>
  </div>;
 }
