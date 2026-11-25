@@ -19,7 +19,15 @@ export async function handleSettingsRoute(request:Request,env:Env,cors:Record<st
   if(!input||typeof input!=="object"||Array.isArray(input))return fail("Missing settings object",400);
   const record=input as Record<string,unknown>;
   if(Object.keys(record).some(key=>!keys.includes(key as typeof keys[number])))return fail("Unknown settings field",400);
-  for(const [key,value] of Object.entries(record)){if(typeof value!=="string"||value.length>2000)return fail(`Invalid value for ${key}`,400);}
+  for(const [key,value] of Object.entries(record)){
+   if(typeof value!=="string"||value.length>2000)return fail(\`Invalid value for \${key}\`,400);
+   if(key==="contactEmail"&&value&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))return fail("Invalid contact email",400);
+   if(["websiteUrl","facebookUrl","instagramUrl","linkedinUrl"].includes(key)&&value){
+    try{const url=new URL(value);if(url.protocol!=="https:"&&url.protocol!=="http:")return fail(\`Invalid URL for \${key}\`,400);}
+    catch{return fail(\`Invalid URL for \${key}\`,400);}
+   }
+  }
+  if("organizationName" in record&&typeof record.organizationName==="string"&&!record.organizationName.trim())return fail("Organization name cannot be empty",400);
   const now=Math.floor(Date.now()/1000);
   const statements=Object.entries(record).map(([key,value])=>env.DB.prepare("INSERT INTO organization_settings (key,value,updated_at) VALUES (?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at").bind(key,value,now));
   if(statements.length)await env.DB.batch(statements);
