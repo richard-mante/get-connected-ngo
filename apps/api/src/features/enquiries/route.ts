@@ -55,7 +55,8 @@ export async function handleEnquiryRoute(request:Request,env:Env,cors:Record<str
     if(status&&!statuses.includes(status as EnquiryStatus))return fail("Invalid enquiry status",400);
     const limit=Math.min(100,Math.max(1,Number(url.searchParams.get("limit"))||25));
     const offset=Math.max(0,Number(url.searchParams.get("offset"))||0);
-    return json({items:await repo.list(status,limit,offset)},200,cors);
+    const search=clean(url.searchParams.get("q"),120);
+    return json({items:await repo.list(status,limit,offset,search||null)},200,cors);
   }
   const match=path.match(/^\/api\/v1\/admin\/enquiries\/([a-f0-9-]+)$/i);
   if(match&&request.method==="PATCH"){
