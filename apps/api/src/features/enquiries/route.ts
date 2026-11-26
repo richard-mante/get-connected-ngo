@@ -46,7 +46,6 @@ export async function handleEnquiryRoute(request:Request,env:Env,cors:Record<str
     const id=crypto.randomUUID(),now=Math.floor(Date.now()/1000),hash=await clientHash(request);
     if(!await consumeRateLimit(env,hash,now))return fail("Too many enquiries from this connection. Please wait and try again.",429);
     await repo.create(id,{name,email,phone,subject,message},now,hash);
-    await repo.create(id,{name,email,phone,subject,message},now,null);
     return json({ok:true,id},201,cors);
   }
   if(!path.startsWith("/api/v1/admin/enquiries"))return null;
